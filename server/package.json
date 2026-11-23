@@ -1,0 +1,13 @@
+{
+  "name": "eat-what-server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "今天吃什么 网页版后端：Node HTTP 服务 + 内存计数（无外部依赖）。",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "check": "node --check server.js && node --check recommend/service.js && node --check recommend/repo.js && node --check usage/service.js && node --check avoid/service.js"
+  },
+  "engines": { "node": ">=18" },
+  "dependencies": {}
+}
