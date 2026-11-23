@@ -7,5 +7,8 @@ node_modules/
 .wbapp_*.genie
 .design/shot.png
 
+# WorkBuddy 内部项目数据（应用定位器、工作日志）—— 不进公开仓库
+.workbuddy/
+
 # 临时图片/联系表
 **/_contact*.jpg
