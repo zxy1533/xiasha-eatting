@@ -10,6 +10,19 @@
     return '';
   })();
 
+  // The publish gateway requires `sharecode` on every request (page AND /api).
+  // Carry it from the current page URL onto every API call so the SPA works
+  // behind the WorkBuddy share link. Local dev has no sharecode -> no-op.
+  var SHARE_QUERY = (function () {
+    var m = /[?&]sharecode=([^&]+)/.exec(window.location.search);
+    return m ? 'sharecode=' + encodeURIComponent(m[1]) : '';
+  })();
+
+  function withShare(path) {
+    if (!SHARE_QUERY) return path;
+    return path + (path.indexOf('?') >= 0 ? '&' : '?') + SHARE_QUERY;
+  }
+
   var CALL_TIMEOUT_MS = 30000; // DeepSeek 深度思考 9~18s，放宽到 30s
 
   function deviceId() {
@@ -39,7 +52,7 @@
     var timer = ctrl ? setTimeout(function () { ctrl.abort(); }, CALL_TIMEOUT_MS) : null;
     function done() { if (timer) { clearTimeout(timer); timer = null; } }
 
-    return fetch(API_BASE + path, {
+    return fetch(API_BASE + withShare(path), {
       method: method,
       headers: headers,
       body: body,

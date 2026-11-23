@@ -126,7 +126,7 @@ const MIME = Object.freeze({
   '.json': 'application/json; charset=utf-8',
 });
 
-function sendStatic(res, absPath) {
+function sendStatic(res, absPath, shareQuery) {
   const ext = path.extname(absPath).toLowerCase();
   const contentType = MIME[ext];
   if (!contentType) return false; // unsupported extension -> let caller 404
@@ -137,7 +137,17 @@ function sendStatic(res, absPath) {
     return false;
   }
   if (!stat.isFile()) return false;
-  const body = fs.readFileSync(absPath);
+  let body = fs.readFileSync(absPath);
+  // The publish gateway requires `sharecode` on EVERY request, including
+  // static assets. index.html references css/js by relative path, so rewrite
+  // them to carry the sharecode when the page itself was loaded with one.
+  if (ext === '.html' && shareQuery) {
+    let html = body.toString('utf8');
+    html = html
+      .replace(/(href=")(css\/|js\/)([^"]+)(")/g, '$1/$2$3' + shareQuery + '$4')
+      .replace(/(src=")(css\/|js\/)([^"]+)(")/g, '$1/$2$3' + shareQuery + '$4');
+    body = Buffer.from(html, 'utf8');
+  }
   res.writeHead(200, Object.assign({
     'Content-Type': contentType,
     'Content-Length': body.length,
@@ -150,15 +160,20 @@ function sendStatic(res, absPath) {
 /**
  * Serve web/ statically with path-traversal guard.
  * Only known extensions under WEB_ROOT are served; anything else returns false.
+ * `rawUrl` includes the query string so the sharecode can be propagated into
+ * the HTML's asset references.
  */
-function serveStatic(res, urlPath) {
+function serveStatic(res, urlPath, rawUrl) {
   const rel = decodeURIComponent(urlPath === '/' ? '/index.html' : urlPath);
   const abs = path.resolve(WEB_ROOT, '.' + rel);
   // Guard: resolved path must stay inside WEB_ROOT.
   if (abs !== WEB_ROOT && !abs.startsWith(WEB_ROOT + path.sep)) {
     return false;
   }
-  return sendStatic(res, abs);
+  let shareQuery = '';
+  const m = /[?&]sharecode=([^&]+)/.exec(rawUrl || '');
+  if (m) shareQuery = '?sharecode=' + encodeURIComponent(m[1]);
+  return sendStatic(res, abs, shareQuery);
 }
 
 const server = http.createServer((req, res) => {
@@ -178,7 +193,7 @@ const server = http.createServer((req, res) => {
       if (method === 'GET' && url === '/api/usage') return handleUsage();
       // Everything else on GET is a static asset from web/.
       if (method === 'GET') {
-        if (serveStatic(res, url)) return null; // already responded
+        if (serveStatic(res, url, req.url)) return null; // already responded
         return fail(CODES.NOT_FOUND, '页面不存在');
       }
       return fail(CODES.NOT_FOUND, '接口不存在');
