@@ -83,10 +83,14 @@ function resolveConfig(env, opts) {
     throw new AppError(CODES.CONFIG_ERROR, 'LLM_API_KEY missing from environment');
   }
   config.LLM_API_KEY = typeof key === 'string' ? key : '';
-  // Upper-bound reservation: 4000 input + 400 output tokens (SPEC §8.2).
+  // Upper-bound reservation (F7-b): the deep-thinking path hands the FULL
+  // 600-store digest to the model. Measured on a real call: ~28525 input +
+  // ~1041 completion tokens (completion includes reasoning tokens, billed as
+  // output). Reserve 45000 input + 8000 output as a true upper bound — over-
+  // estimating only makes the monthly cap trip earlier, which is the safe side.
   config.MAX_CALL_MICROS =
-    Math.ceil(4000 * config.PRICE_IN_MICRO_PER_1K / 1000) +
-    Math.ceil(400 * config.PRICE_OUT_MICRO_PER_1K / 1000);
+    Math.ceil(45000 * config.PRICE_IN_MICRO_PER_1K / 1000) +
+    Math.ceil(8000 * config.PRICE_OUT_MICRO_PER_1K / 1000);
 
   return Object.freeze(config);
 }

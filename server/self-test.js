@@ -56,6 +56,18 @@ async function testRepo() {
 async function testRecommendChain() {
   const store = repo.createStore();
   const config = resolveConfig({}, { requireKey: false });
+
+  // Regression guard (F7-b): the reserved upper bound must cover a real
+  // deep-thinking call (~28525 input + ~1041 completion tokens, measured
+  // 2026-11-23). If a future edit lowers MAX_CALL_MICROS below this, the
+  // monthly cap would silently under-count again.
+  const measuredMicros =
+    Math.ceil(28525 * config.PRICE_IN_MICRO_PER_1K / 1000) +
+    Math.ceil(1041 * config.PRICE_OUT_MICRO_PER_1K / 1000);
+  assert(config.MAX_CALL_MICROS >= measuredMicros,
+    `MAX_CALL_MICROS ${config.MAX_CALL_MICROS} must cover measured ${measuredMicros} micros`);
+  console.log(`  MAX_CALL_MICROS=${config.MAX_CALL_MICROS} >= measured=${measuredMicros} OK`);
+
   let llmCalls = 0;
   const mockLLM = async () => {
     llmCalls += 1;
