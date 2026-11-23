@@ -113,7 +113,7 @@ async function handleUsage() {
 // ── Static H5 hosting ────────────────────────────────────────────────────────
 // The same single port serves both the API and the web/ static frontend, so the
 // browser can call /api/* same-origin (no CORS needed in production).
-const WEB_ROOT = path.resolve(__dirname, '..', 'web');
+const WEB_ROOT = path.resolve(__dirname, 'web');
 const MIME = Object.freeze({
   '.html': 'text/html; charset=utf-8',
   '.css': 'text/css; charset=utf-8',
