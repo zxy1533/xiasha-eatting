@@ -1,0 +1,72 @@
+<view class="u-page av">
+  <toast-host />
+
+  <view class="av-search">
+    <image class="av-search-icon" src="/assets/icons/search.svg" aria-hidden="true" />
+    <input
+      class="av-input"
+      value="{{query}}"
+      placeholder="查一家店，看有没有人踩过雷"
+      placeholder-class="av-ph"
+      maxlength="40"
+      confirm-type="search"
+      bindinput="onInput"
+      bindconfirm="search"
+      aria-label="查店名或商圈"
+    />
+    <button class="av-go" bindtap="search" disabled="{{busy}}" aria-label="查这家店">查</button>
+  </view>
+
+  <view class="av-chips-title">
+    <text class="u-caption">常被查的</text>
+  </view>
+  <view class="av-chips">
+    <view
+      class="u-chip"
+      wx:for="{{chips}}"
+      wx:key="*this"
+      data-text="{{item}}"
+      bindtap="pickChip"
+      aria-label="查询 {{item}}"
+    >{{item}}</view>
+  </view>
+  <text class="u-hint av-honest">表里没有的店，我们不会瞎编</text>
+
+  <usage-tip wx:if="{{scenario}}" scenario="{{scenario}}" bind:action="onTipAction" />
+
+  <view class="av-empty" wx:if="{{searched && result && !result.found}}">
+    <text class="av-empty-title">表里没有这家</text>
+    <text class="u-hint">换个写法试试，或者这家还没人踩过</text>
+    <button class="u-btn-secondary av-empty-btn" bindtap="gotoIndex" aria-label="让机器人帮我定">让机器人帮我定</button>
+  </view>
+
+  <view class="av-results" wx:if="{{searched && result && result.found}}">
+    <view class="u-card av-match" wx:for="{{result.matches}}" wx:key="id">
+      <view class="av-match-head">
+        <text class="av-name">{{item.name}}</text>
+        <verdict-badge verdict="{{item.verdict}}" />
+      </view>
+      <text class="u-caption av-source">{{item.source_sheet}} · {{item.mention_count}} 条提及</text>
+
+      <view class="av-evidence">
+        <view class="av-eq" wx:for="{{item.evidence}}" wx:for-item="quote" wx:key="*this">
+          <evidence-card text="{{quote}}" />
+        </view>
+      </view>
+
+      <view class="av-match-actions">
+        <button
+          class="u-btn-secondary"
+          bindtap="saveMatch"
+          data-id="{{item.id}}"
+          disabled="{{item.saved}}"
+          aria-label="存进清单"
+        >
+          <image class="av-icon" src="/assets/icons/bookmark.svg" aria-hidden="true" />
+          <text>{{item.saved ? '已在清单' : '存进清单'}}</text>
+        </button>
+        <button class="u-btn-secondary" bindtap="goWhy" data-id="{{item.id}}" aria-label="看原话">看原话</button>
+      </view>
+    </view>
+  </view>
+</view>

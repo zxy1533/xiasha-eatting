@@ -1,0 +1,3 @@
+<text class="as {{cls}}">
+  <text wx:for="{{chars}}" wx:key="ms" class="as-char" style="animation-delay: {{item.ms}}ms">{{item.c}}</text>
+</text>

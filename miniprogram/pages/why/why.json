@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "为什么推荐它",
+  "usingComponents": {
+    "verdict-badge": "/components/verdict-badge/verdict-badge",
+    "evidence-card": "/components/evidence-card/evidence-card",
+    "toast-host": "/components/toast-host/toast-host"
+  }
+}

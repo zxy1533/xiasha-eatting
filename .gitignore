@@ -1,0 +1,11 @@
+# 密钥文件 —— 绝不进版本库
+cloud-functions/recommend/.env
+**/.env
+
+# 依赖与构建产物
+node_modules/
+.wbapp_*.genie
+.design/shot.png
+
+# 临时图片/联系表
+**/_contact*.jpg

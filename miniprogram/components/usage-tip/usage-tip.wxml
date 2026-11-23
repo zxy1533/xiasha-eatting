@@ -1,0 +1,5 @@
+<view class="ut ut-{{tone}}">
+  <image class="ut-icon" src="{{icon}}" aria-hidden="true" />
+  <text class="ut-text">{{tip}}</text>
+  <view wx:if="{{actionText}}" class="ut-action" bindtap="onAction" aria-label="{{actionText}}">{{actionText}}</view>
+</view>

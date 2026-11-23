@@ -1,0 +1,4 @@
+<view class="vb {{cls}} {{large ? 'vb-lg' : ''}}">
+  <image class="vb-icon" src="{{icon}}" aria-hidden="true" />
+  <text>{{label}}</text>
+</view>

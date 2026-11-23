@@ -1,0 +1,17 @@
+.vb {
+  display: inline-flex;
+  min-height: var(--sp-xl);
+  align-items: center;
+  gap: var(--sp-xs);
+  padding: 0 var(--sp-xs);
+  border-radius: var(--r-sm);
+  font-size: var(--fs-t2);
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+}
+.vb-lg { font-size: var(--fs-t3); }
+.vb-icon { width: var(--icon-xs); height: var(--icon-xs); }
+.vb-good { background: var(--tint-good); color: var(--success); }
+.vb-bad { background: var(--tint-bad); color: var(--danger); }
+.vb-warn { background: var(--tint-warn); color: var(--warning); }

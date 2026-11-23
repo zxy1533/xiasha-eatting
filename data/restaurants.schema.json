@@ -1,0 +1,64 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "RestaurantsSeed",
+  "type": "array",
+  "minItems": 1,
+  "items": {
+    "type": "object",
+    "required": [
+      "id",
+      "name",
+      "verdict",
+      "evidence",
+      "tags",
+      "source_sheet",
+      "mention_count"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "id": {
+        "type": "string",
+        "pattern": "^r_[0-9]{4,}$"
+      },
+      "name": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 20
+      },
+      "verdict": {
+        "enum": [
+          "褒",
+          "贬",
+          "有争议"
+        ]
+      },
+      "evidence": {
+        "type": "array",
+        "minItems": 1,
+        "maxItems": 10,
+        "items": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 60
+        }
+      },
+      "tags": {
+        "type": "array",
+        "maxItems": 6,
+        "items": {
+          "type": "string",
+          "maxLength": 10
+        }
+      },
+      "source_sheet": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 30
+      },
+      "mention_count": {
+        "type": "integer",
+        "minimum": 1
+      }
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/avoid/avoid",
+    "pages/mine/mine",
+    "pages/why/why"
+  ],
+  "window": {
+    "navigationBarTitleText": "今天吃什么",
+    "navigationBarBackgroundColor": "#FFFFFF",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#FAFAFA",
+    "backgroundTextStyle": "light"
+  },
+  "tabBar": {
+    "color": "#6E6B68",
+    "selectedColor": "#C8371B",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
+    "list": [
+      { "pagePath": "pages/index/index", "text": "吃什么" },
+      { "pagePath": "pages/avoid/avoid", "text": "避雷" },
+      { "pagePath": "pages/mine/mine", "text": "清单" }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

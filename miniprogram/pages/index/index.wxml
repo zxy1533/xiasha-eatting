@@ -1,0 +1,111 @@
+<view class="u-page idx">
+  <usage-tip usage="{{usage}}" scenario="{{scenario}}" bind:action="onTipAction" />
+
+  <view class="idx-carousel" aria-label="校园周边美食">
+    <swiper
+      class="idx-swiper"
+      indicator-dots="{{true}}"
+      indicator-color="rgba(255,255,255,0.5)"
+      indicator-active-color="#FFFFFF"
+      autoplay="{{true}}"
+      interval="{{3500}}"
+      duration="{{500}}"
+      circular="{{true}}"
+      bindtap="onCarouselTap"
+    >
+      <swiper-item wx:for="{{carouselImages}}" wx:key="*this">
+        <image class="idx-slide" src="{{item}}" mode="aspectFill" aria-hidden="true" />
+      </swiper-item>
+    </swiper>
+    <text class="idx-carousel-note">今天吃点好的</text>
+  </view>
+
+  <view class="idx-head">
+    <text class="idx-lead">别挑了，说一句想吃啥</text>
+  </view>
+
+  <view class="idx-input-wrap">
+    <input
+      class="idx-input"
+      value="{{question}}"
+      placeholder="比如：辣一点，别太贵"
+      placeholder-class="idx-ph"
+      maxlength="200"
+      confirm-type="send"
+      bindinput="onInput"
+      bindconfirm="ask"
+      aria-label="想吃什么"
+    />
+  </view>
+
+  <button
+    class="u-btn-primary idx-submit {{busy || blocked ? 'u-btn-disabled' : ''}}"
+    bindtap="ask"
+    disabled="{{busy || blocked}}"
+    aria-label="定一家"
+  >
+    <image wx:if="{{!busy}}" class="idx-bowl" src="/assets/icons/bowl.svg" aria-hidden="true" />
+    <text>{{busy ? '翻小抄中…' : (blocked ? '本月额度用完了' : '定一家')}}</text>
+  </button>
+
+  <view class="idx-chips">
+    <view
+      class="u-chip"
+      wx:for="{{examples}}"
+      wx:key="*this"
+      data-text="{{item}}"
+      bindtap="pickExample"
+      aria-label="填入 {{item}}"
+    >{{item}}</view>
+  </view>
+  <text class="u-hint idx-help">不知道怎么说？点一句试试</text>
+
+  <view class="idx-ghosts" wx:if="{{ghosts.length > 0}}">
+    <view class="ghost {{item.fresh ? 'ghost-fresh' : ''}}" wx:for="{{ghosts}}" wx:key="key">
+      <text class="ghost-name">{{item.name}}</text>
+      <view class="ghost-line"></view>
+      <text class="ghost-note">划掉这家</text>
+    </view>
+  </view>
+
+  <view class="idx-loading" wx:if="{{busy}}">
+    <text class="u-hint">在表里翻哪个能吃…</text>
+  </view>
+
+  <view class="u-card idx-answer {{fading ? 'idx-fade' : ''}}" wx:if="{{answer}}">
+    <answer-stream wx:if="{{answer.summary}}" text="{{answer.summary}}" cls="idx-summary" />
+
+    <view
+      class="idx-shop {{index === 0 ? 'idx-shop-first' : ''}}"
+      wx:for="{{answer.restaurants}}"
+      wx:key="restaurant_id"
+    >
+      <view class="idx-title-row">
+        <image class="idx-circle" src="/assets/icons/circle.svg" aria-hidden="true" />
+        <text class="idx-display">{{item.restaurant_name}}</text>
+      </view>
+
+      <text class="idx-reason">{{item.reason}}</text>
+
+      <view class="idx-badge-row">
+        <verdict-badge verdict="{{item.verdict}}" size="lg" />
+      </view>
+
+      <view class="idx-evidence">
+        <view class="idx-eq" wx:for="{{item.evidence}}" wx:for-item="ev" wx:key="*this">
+          <evidence-card text="{{ev}}" />
+        </view>
+      </view>
+
+      <button class="u-btn-secondary idx-why-btn" bindtap="goWhy" data-index="{{index}}" aria-label="为什么推荐它">为什么推荐它</button>
+    </view>
+
+    <view class="idx-actions">
+      <button class="u-btn-secondary" bindtap="changeOne" aria-label="换一家">
+        <image class="idx-refresh" src="/assets/icons/refresh.svg" aria-hidden="true" />
+        <text>换一家</text>
+      </button>
+    </view>
+    <text class="u-caption">换一家也算问一次</text>
+  </view>
+</view>

@@ -1,0 +1,162 @@
+/* 全局 Token 定义：数值与色值全部来自 design-tokens.json，页面/组件只引用变量 */
+page {
+  --bg: #FAFAFA;
+  --surface: #FFFFFF;
+  --raised: #F5F5F5;
+  --border: #E4E3E2;
+  --ink: #1D1C1B;
+  --muted: #6E6B68;
+  --accent: #C8371B;
+  --accent-pressed: #A82E17;
+  --on-accent: #FFFFFF;
+  --success: #2F7A4F;
+  --warning: #9A6A0B;
+  --danger: #B32E28;
+  --info: #4A6270;
+
+  --tint-good: rgba(47, 122, 79, 0.10);
+  --tint-warn: rgba(154, 106, 11, 0.10);
+  --tint-bad: rgba(179, 46, 40, 0.10);
+  --tint-info: rgba(74, 98, 112, 0.10);
+  --tint-accent: rgba(200, 55, 27, 0.10);
+  --accent-on-dark: #FBE3DC;
+
+  --sp-xs: 8rpx;
+  --sp-sm: 16rpx;
+  --sp-md: 24rpx;
+  --sp-lg: 32rpx;
+  --sp-xl: 48rpx;
+  --sp-2xl: 64rpx;
+  --sp-3xl: 96rpx;
+
+  --fs-t1: 22rpx;
+  --fs-t2: 24rpx;
+  --fs-t3: 26rpx;
+  --fs-t4: 28rpx;
+  --fs-t5: 32rpx;
+  --fs-t6: 36rpx;
+  --fs-t7: 48rpx;
+  --fs-t8: 60rpx;
+
+  --r-sm: 8rpx;
+  --r-md: 16rpx;
+  --r-lg: 24rpx;
+  --r-sheet: 32rpx;
+
+  --gutter: 32rpx;
+  --tap-min: 88rpx;
+  --icon-xs: 24rpx;
+  --icon-sm: 32rpx;
+  --icon-md: 40rpx;
+  --icon-lg: 48rpx;
+  --hairline: 1rpx;
+  --strike-h: 4rpx;
+
+  --elev-toast: 0 8rpx 32rpx rgba(29, 28, 27, 0.14);
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --dur-instant: 80ms;
+  --dur-confirm: 150ms;
+  --dur-enter: 240ms;
+  --dur-strike: 300ms;
+  --typewriter-step: 28ms;
+
+  box-sizing: border-box;
+  min-height: 100%;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  font-size: var(--fs-t5);
+  line-height: 1.7;
+  letter-spacing: 0;
+}
+
+view, text, input, button {
+  box-sizing: border-box;
+}
+
+button {
+  padding: 0;
+  margin: 0;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+button::after { border: 0; }
+
+.u-page {
+  padding: var(--sp-lg) var(--gutter) var(--sp-2xl);
+}
+
+.u-card {
+  background: var(--surface);
+  border: 1rpx solid var(--border);
+  border-radius: var(--r-lg);
+}
+
+.u-btn-primary {
+  display: flex;
+  min-height: var(--tap-min);
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-sm);
+  padding: 0 var(--sp-lg);
+  border-radius: var(--r-md);
+  background: var(--accent);
+  color: var(--on-accent);
+  font-size: var(--fs-t6);
+  font-weight: 500;
+  line-height: 1.4;
+  transition: background-color var(--dur-instant) ease-out, transform var(--dur-instant) ease-out;
+}
+.u-btn-primary.u-pressed { background: var(--accent-pressed); }
+.u-btn-primary:active { background: var(--accent-pressed); transform: scale(0.98); }
+
+.u-btn-secondary {
+  display: flex;
+  min-height: var(--tap-min);
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-xs);
+  padding: 0 var(--sp-md);
+  border: 1rpx solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: var(--fs-t5);
+  transition: background-color var(--dur-instant) ease-out;
+}
+.u-btn-secondary:active { background: var(--raised); }
+
+.u-btn-disabled {
+  background: var(--raised);
+  color: var(--muted);
+  border: 1rpx solid var(--border);
+}
+
+.u-chip {
+  display: inline-flex;
+  min-height: var(--tap-min);
+  align-items: center;
+  padding: 0 var(--sp-md);
+  border-radius: var(--r-sm);
+  background: var(--raised);
+  color: var(--ink);
+  font-size: var(--fs-t5);
+  transition: background-color var(--dur-instant) ease-out;
+}
+.u-chip:active { background: var(--border); }
+
+.u-hint { color: var(--muted); font-size: var(--fs-t3); line-height: 1.6; }
+.u-caption { color: var(--muted); font-size: var(--fs-t2); line-height: 1.5; }
+.u-num { font-variant-numeric: tabular-nums; }
+
+/* reduced-motion：所有动画直接跳到终态，内容不消失 */
+@media (prefers-reduced-motion: reduce) {
+  page, page * {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

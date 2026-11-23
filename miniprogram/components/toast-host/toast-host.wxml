@@ -1,0 +1,7 @@
+<view wx:if="{{visible}}" class="th" aria-live="polite">
+  <text class="th-text">{{text}}</text>
+  <view wx:if="{{actionText}}" class="th-action" bindtap="onAction" aria-label="{{actionText}}">{{actionText}}</view>
+  <view wx:if="{{!actionText}}" class="th-close" bindtap="onHide" aria-label="关闭提示">
+    <image class="th-close-icon" src="/assets/icons/close.svg" aria-hidden="true" />
+  </view>
+</view>

@@ -1,0 +1,33 @@
+.ec {
+  position: relative;
+  padding: var(--sp-md) var(--sp-md) var(--sp-sm) var(--sp-xl);
+  background: var(--raised);
+  border-radius: var(--r-lg);
+}
+.ec-quote {
+  position: absolute;
+  left: var(--sp-sm);
+  top: var(--sp-md);
+  width: var(--icon-xs);
+  height: var(--icon-xs);
+}
+.ec-text {
+  display: block;
+  color: var(--ink);
+  font-size: var(--fs-t4);
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.ec-clamp {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+}
+.ec-more {
+  display: inline-block;
+  min-height: var(--sp-xl);
+  padding: var(--sp-xs) 0 0;
+  color: var(--accent);
+  font-size: var(--fs-t3);
+}

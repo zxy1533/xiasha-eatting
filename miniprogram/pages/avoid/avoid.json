@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "避雷",
+  "usingComponents": {
+    "verdict-badge": "/components/verdict-badge/verdict-badge",
+    "evidence-card": "/components/evidence-card/evidence-card",
+    "usage-tip": "/components/usage-tip/usage-tip",
+    "toast-host": "/components/toast-host/toast-host"
+  }
+}

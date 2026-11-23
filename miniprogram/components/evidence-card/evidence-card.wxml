@@ -1,0 +1,7 @@
+<view class="ec">
+  <image class="ec-quote" src="/assets/icons/quote.svg" aria-hidden="true" />
+  <text class="ec-text {{expanded ? '' : 'ec-clamp'}}">{{text}}</text>
+  <view wx:if="{{long}}" class="ec-more" bindtap="toggle" aria-label="{{expanded ? '收起原话' : '展开原话'}}">
+    {{expanded ? '收起' : '展开'}}
+  </view>
+</view>

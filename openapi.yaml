@@ -1,0 +1,150 @@
+openapi: 3.0.3
+info:
+  title: 下沙今天吃什么 云函数接口契约
+  version: 1.0.0
+  description: >
+    微信云函数接口（经 wx.cloud.callFunction 调用）。所有接口共用统一信封
+    {code,data,message}，code=0 成功。openid 由服务端会话取，入参中的 openid 一律忽略。
+servers:
+  - url: wx://cloud-functions
+paths:
+  /usage-check:
+    post:
+      summary: 限次预检（只读，不扣额度）
+      operationId: usageCheck
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                client_ts: { type: integer, description: 仅日志用，可空 }
+      responses:
+        '200':
+          description: 成功信封
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Envelope'
+                  - type: object
+                    properties:
+                      data: { $ref: '#/components/schemas/UsageCheckData' }
+  /recommend:
+    post:
+      summary: 问答拍板（全接大模型，含限次/缓存/召回/白名单校验）
+      operationId: recommend
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [question]
+              properties:
+                question: { type: string, minLength: 1, maxLength: 200 }
+                exclude:
+                  type: array
+                  maxItems: 20
+                  items: { type: string, pattern: '^r_[0-9]{4,}$' }
+                session_id: { type: string, nullable: true }
+      responses:
+        '200':
+          description: 成功信封
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Envelope'
+                  - type: object
+                    properties:
+                      data: { $ref: '#/components/schemas/RecommendData' }
+  /avoid-lookup:
+    post:
+      summary: 避雷查询（读本地种子，不调大模型）
+      operationId: avoidLookup
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [query]
+              properties:
+                query: { type: string, minLength: 1, maxLength: 40 }
+      responses:
+        '200':
+          description: 成功信封
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Envelope'
+                  - type: object
+                    properties:
+                      data: { $ref: '#/components/schemas/AvoidData' }
+components:
+  schemas:
+    Envelope:
+      type: object
+      required: [code, data, message]
+      properties:
+        code: { type: integer, enum: [0, 40001, 40301, 40302, 40401, 42901, 50001, 50002, 50003] }
+        data: { type: object }
+        message: { type: string, description: 非0时的人类可读中文提示 }
+    UsageCheckData:
+      type: object
+      required: [daily_limit, daily_used, daily_remaining, monthly_cap_micros, monthly_used_micros, global_stopped, reset_date_key]
+      properties:
+        daily_limit: { type: integer, example: 10 }
+        daily_used: { type: integer, example: 3 }
+        daily_remaining: { type: integer, example: 7 }
+        monthly_cap_micros: { type: integer, example: 300000000 }
+        monthly_used_micros: { type: integer, example: 9900000 }
+        global_stopped: { type: boolean, example: false }
+        reset_date_key: { type: string, example: '2026-11-23' }
+    Answer:
+      type: object
+      required: [restaurant_id, restaurant_name, reason, evidence, verdict]
+      properties:
+        restaurant_id: { type: string, pattern: '^r_[0-9]{4,}$' }
+        restaurant_name: { type: string }
+        reason: { type: string, minLength: 1, maxLength: 200 }
+        evidence:
+          type: array
+          minItems: 1
+          items: { type: string }
+        verdict: { enum: [褒, 贬, 有争议] }
+    RecommendData:
+      type: object
+      required: [answer, cached, daily_remaining, degraded, degrade_reason]
+      properties:
+        answer:
+          allOf:
+            - $ref: '#/components/schemas/Answer'
+          nullable: true
+        cached: { type: boolean }
+        daily_remaining: { type: integer }
+        degraded: { type: boolean }
+        degrade_reason: { type: string }
+    AvoidMatch:
+      type: object
+      required: [id, name, verdict, evidence, tags, source_sheet, mention_count]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        verdict: { enum: [褒, 贬, 有争议] }
+        evidence: { type: array, items: { type: string } }
+        tags: { type: array, items: { type: string } }
+        source_sheet: { type: string }
+        mention_count: { type: integer }
+    AvoidData:
+      type: object
+      required: [matches, found]
+      properties:
+        matches:
+          type: array
+          maxItems: 5
+          items: { $ref: '#/components/schemas/AvoidMatch' }
+        found: { type: boolean }

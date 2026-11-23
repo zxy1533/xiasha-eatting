@@ -1,0 +1,9 @@
+{
+  "name": "avoid-lookup",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Local restaurant verdict lookup; no LLM, no external SDK.",
+  "main": "index.js",
+  "engines": { "node": ">=18" },
+  "dependencies": {}
+}

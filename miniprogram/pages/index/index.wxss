@@ -1,0 +1,136 @@
+/* 顶部美食轮播：克制高度，纯图 + 圆点，不叠文案 */
+.idx-carousel {
+  position: relative;
+  margin: 0 calc(var(--gutter) * -1) var(--sp-md);
+  overflow: hidden;
+}
+.idx-swiper { width: 100%; height: 340rpx; }
+.idx-slide { width: 100%; height: 100%; display: block; }
+.idx-carousel-note {
+  position: absolute;
+  left: var(--gutter);
+  bottom: var(--sp-md);
+  padding: 6rpx 20rpx;
+  border-radius: var(--r-sm);
+  background: rgba(29, 28, 27, 0.42);
+  color: #FFFFFF;
+  font-size: var(--fs-t2);
+  line-height: 1.5;
+  letter-spacing: 1rpx;
+}
+
+.idx-head { margin-top: var(--sp-sm); }
+.idx-lead { color: var(--ink); font-size: var(--fs-t6); font-weight: 500; line-height: 1.4; }
+
+.idx-input-wrap { margin-top: var(--sp-sm); }
+.idx-input {
+  width: 100%;
+  min-height: var(--tap-min);
+  padding: 0 var(--sp-md);
+  border: var(--hairline) solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: var(--fs-t5);
+  line-height: 1.7;
+}
+.idx-ph { color: var(--muted); }
+
+.idx-submit { width: 100%; margin-top: var(--sp-md); }
+.idx-bowl { width: var(--icon-md); height: var(--icon-md); }
+
+.idx-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-sm);
+  margin-top: var(--sp-lg);
+}
+.idx-help { display: block; margin-top: var(--sp-sm); }
+
+.idx-ghosts { margin-top: var(--sp-lg); }
+.ghost {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-sm);
+  min-height: var(--sp-2xl);
+}
+.ghost-name { color: var(--muted); font-size: var(--fs-t4); }
+.ghost-line {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 100%;
+  height: var(--strike-h);
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+.ghost-fresh .ghost-line {
+  animation: strike-draw var(--dur-strike) var(--ease-standard) forwards;
+}
+.ghost:not(.ghost-fresh) .ghost-line { transform: scaleX(1); }
+.ghost-note { margin-left: auto; color: var(--danger); font-size: var(--fs-t2); }
+@keyframes strike-draw {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+.idx-loading { margin-top: var(--sp-xl); }
+
+.idx-answer {
+  margin-top: var(--sp-xl);
+  padding: var(--sp-lg);
+  transition: opacity var(--dur-enter) ease-out, transform var(--dur-enter) ease-out;
+}
+.idx-fade { opacity: 0; transform: translateY(var(--sp-xs)); }
+
+/* 小结句：有就打一次字，列表静态展示，避免全屏打字机太吵 */
+.idx-summary {
+  display: block;
+  color: var(--ink);
+  font-size: var(--fs-t5);
+  line-height: 1.6;
+}
+
+/* 每家店一张卡：首张不划分隔线，后续用 1rpx 细分隔 */
+.idx-shop {
+  margin-top: var(--sp-lg);
+  padding-top: var(--sp-lg);
+  border-top: 1rpx solid var(--border);
+}
+.idx-shop-first {
+  margin-top: var(--sp-md);
+  padding-top: 0;
+  border-top: 0;
+}
+
+.idx-title-row { display: flex; align-items: center; gap: var(--sp-sm); }
+.idx-circle { width: var(--icon-lg); height: var(--icon-lg); flex-shrink: 0; }
+.idx-display { color: var(--ink); font-size: var(--fs-t7); font-weight: 500; line-height: 1.3; }
+.idx-reason {
+  display: block;
+  margin-top: var(--sp-md);
+  color: var(--ink);
+  font-size: var(--fs-t4);
+  line-height: 1.6;
+}
+.idx-badge-row { margin-top: var(--sp-md); }
+.idx-evidence { margin-top: var(--sp-sm); }
+.idx-eq + .idx-eq { margin-top: var(--sp-sm); }
+.idx-why-btn { width: 100%; margin-top: var(--sp-md); }
+
+.idx-actions {
+  display: flex;
+  gap: var(--sp-sm);
+  margin-top: var(--sp-lg);
+}
+.idx-actions .u-btn-secondary { flex: 1; }
+.idx-refresh { width: var(--icon-sm); height: var(--icon-sm); }
+.idx-answer .u-caption {
+  display: block;
+  margin-top: var(--sp-sm);
+  color: var(--muted);
+  font-size: var(--fs-t3);
+  text-align: right;
+}

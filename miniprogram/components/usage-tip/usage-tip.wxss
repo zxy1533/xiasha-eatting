@@ -1,0 +1,24 @@
+.ut {
+  display: flex;
+  min-height: var(--sp-2xl);
+  align-items: center;
+  gap: var(--sp-xs);
+  padding: var(--sp-xs) 0;
+}
+.ut-icon { width: var(--icon-sm); height: var(--icon-sm); flex-shrink: 0; }
+.ut-text {
+  flex: 1;
+  font-size: var(--fs-t3);
+  line-height: 1.6;
+}
+.ut-action {
+  display: inline-flex;
+  min-height: var(--tap-min);
+  align-items: center;
+  padding: 0 var(--sp-sm);
+  color: var(--accent);
+  font-size: var(--fs-t3);
+}
+.ut-info .ut-text { color: var(--info); }
+.ut-warning .ut-text { color: var(--warning); }
+.ut-danger .ut-text { color: var(--danger); }

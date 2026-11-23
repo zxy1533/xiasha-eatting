@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "吃什么",
+  "usingComponents": {
+    "usage-tip": "/components/usage-tip/usage-tip",
+    "answer-stream": "/components/answer-stream/answer-stream",
+    "verdict-badge": "/components/verdict-badge/verdict-badge",
+    "evidence-card": "/components/evidence-card/evidence-card"
+  }
+}

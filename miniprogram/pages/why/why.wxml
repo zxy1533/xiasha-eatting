@@ -1,0 +1,42 @@
+<view class="u-page why">
+  <toast-host />
+
+  <view class="why-back" bindtap="goBack" aria-label="返回">
+    <image class="why-back-icon" src="/assets/icons/back.svg" aria-hidden="true" />
+    <text>返回</text>
+  </view>
+
+  <view class="why-empty" wx:if="{{empty}}">
+    <text class="why-empty-title">这次没挑出理由，换个说法再问</text>
+    <button class="u-btn-secondary why-empty-btn" bindtap="goBack" aria-label="返回首页">返回</button>
+  </view>
+
+  <block wx:if="{{!empty}}">
+    <view class="why-head">
+      <text class="why-name">{{answer.restaurant_name}}</text>
+      <verdict-badge verdict="{{answer.verdict}}" size="lg" />
+    </view>
+
+    <text class="why-subtitle">凭什么推荐它</text>
+    <text class="why-reason">{{answer.reason}}</text>
+
+    <view class="why-disputed" wx:if="{{disputed}}">
+      <text>这家有争议，夸的和骂的都有，自己掂量</text>
+    </view>
+
+    <text class="u-caption why-note">都是同学原话，名字抹掉了</text>
+
+    <view class="why-evidence">
+      <view class="why-eq" wx:for="{{answer.evidence}}" wx:key="*this">
+        <evidence-card text="{{item}}" />
+      </view>
+    </view>
+
+    <view class="why-actions">
+      <button class="u-btn-primary" bindtap="save" disabled="{{saved}}" aria-label="就吃这家，存进清单">
+        {{saved ? '已在清单' : '就吃这家，存进清单'}}
+      </button>
+      <button class="u-btn-secondary" bindtap="changeOne" aria-label="换一家">换一家</button>
+    </view>
+  </block>
+</view>

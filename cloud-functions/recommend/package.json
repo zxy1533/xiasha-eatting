@@ -1,0 +1,11 @@
+{
+  "name": "recommend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "LLM-only restaurant recommendation with quota, cache and whitelist guards.",
+  "main": "index.js",
+  "engines": { "node": ">=18" },
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

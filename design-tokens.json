@@ -1,0 +1,192 @@
+{
+  "$meta": {
+    "product": "下沙今天吃什么",
+    "designer": "颜好看",
+    "date": "2026-11-22",
+    "platform": "wechat-miniprogram",
+    "designBasis": "750rpx (1px = 2rpx)",
+    "source": "SPEC v1 + research/brief.md + design_query 奶白·浅色(中性底) + 题材取色(朱红)",
+    "paletteNote": "中性底来自 design_query 库实测；强调色朱红从题材(红笔小抄/辣椒)取出，非默认色。禁用紫粉渐变、奶油底+陶土+衬线第三波长相。"
+  },
+
+  "color": {
+    "primitive": {
+      "white":   { "value": "#FFFFFF" },
+      "black":   { "value": "#1D1C1B" },
+      "vermilion": {
+        "50":  { "value": "#FDF2EF" },
+        "100": { "value": "#FBE3DC" },
+        "500": { "value": "#C8371B" },
+        "600": { "value": "#B83219" },
+        "700": { "value": "#A82E17" }
+      },
+      "slate": {
+        "400": { "value": "#6E6B68" },
+        "500": { "value": "#5F5C59" },
+        "700": { "value": "#4A6270" },
+        "800": { "value": "#1D1C1B" }
+      },
+      "green":  { "value": "#2F7A4F" },
+      "amber":  { "value": "#9A6A0B" },
+      "red":    { "value": "#B32E28" }
+    },
+
+    "semantic": {
+      "bg":      { "value": "#FAFAFA", "usage": "页面底" },
+      "surface": { "value": "#FFFFFF", "usage": "输入框/答案卡/导航底" },
+      "raised":  { "value": "#F5F5F5", "usage": "原话卡/chip/次级面" },
+      "border":  { "value": "#E4E3E2", "usage": "0.5px 发丝描边，仅平面分隔" },
+      "ink":     { "value": "#1D1C1B", "usage": "正文主墨" },
+      "muted":   { "value": "#6E6B68", "usage": "说明/计数/来源" },
+      "accent":  { "value": "#C8371B", "usage": "主按钮/选中tab/红圈删除线；一屏≤2处" },
+      "accentPressed": { "value": "#A82E17", "usage": "accent 按下态" },
+      "onAccent": { "value": "#FFFFFF", "usage": "accent/语义实心底上的文字" }
+    },
+
+    "verdict": {
+      "good": {
+        "fg": { "value": "#FFFFFF" },
+        "bg": { "value": "#2F7A4F" },
+        "tintBg": { "value": "rgba(47,122,79,0.10)" },
+        "tintFg": { "value": "#2F7A4F" },
+        "symbol": "svg-check",
+        "label": "能吃"
+      },
+      "disputed": {
+        "fg": { "value": "#FFFFFF" },
+        "bg": { "value": "#9A6A0B" },
+        "tintBg": { "value": "rgba(154,106,11,0.10)" },
+        "tintFg": { "value": "#9A6A0B" },
+        "symbol": "svg-wave",
+        "label": "有争议"
+      },
+      "bad": {
+        "fg": { "value": "#FFFFFF" },
+        "bg": { "value": "#B32E28" },
+        "tintBg": { "value": "rgba(179,46,40,0.10)" },
+        "tintFg": { "value": "#B32E28" },
+        "symbol": "svg-cross",
+        "label": "雷"
+      }
+    },
+
+    "status": {
+      "info": { "fg": { "value": "#4A6270" }, "bg": { "value": "rgba(74,98,112,0.10)" } },
+      "warning": { "fg": { "value": "#9A6A0B" }, "bg": { "value": "rgba(154,106,11,0.10)" } },
+      "danger":  { "fg": { "value": "#B32E28" }, "bg": { "value": "rgba(179,46,40,0.10)" } },
+      "success": { "fg": { "value": "#2F7A4F" }, "bg": { "value": "rgba(47,122,79,0.10)" } }
+    },
+
+    "component": {
+      "primaryButton": { "bg": "{color.semantic.accent}", "text": "{color.semantic.onAccent}", "pressedBg": "{color.semantic.accentPressed}", "radius": "{radius.md}" },
+      "secondaryButton": { "bg": "{color.semantic.surface}", "text": "{color.semantic.accent}", "border": "{color.semantic.border}", "radius": "{radius.md}" },
+      "input": { "bg": "{color.semantic.surface}", "text": "{color.semantic.ink}", "border": "{color.semantic.border}", "focusBorder": "{color.semantic.accent}", "placeholder": "{color.semantic.muted}" },
+      "evidenceCard": { "bg": "{color.semantic.raised}", "text": "{color.semantic.ink}", "radius": "{radius.lg}" },
+      "tabBar": { "bg": "{color.semantic.surface}", "inactive": "{color.semantic.muted}", "active": "{color.semantic.accent}" }
+    }
+  },
+
+  "contrast": {
+    "_note": "WCAG 2.1 相对亮度实测，由脚本按真实 hex 计算；AA 正文门槛 4.5:1。allPass=true 表示下列每一对都达标。",
+    "pairs": [
+      { "pair": "ink on bg",            "fg": "#1D1C1B", "bg": "#FAFAFA", "ratio": 16.30, "pass": true },
+      { "pair": "ink on surface",       "fg": "#1D1C1B", "bg": "#FFFFFF", "ratio": 17.02, "pass": true },
+      { "pair": "muted on bg",          "fg": "#6E6B68", "bg": "#FAFAFA", "ratio": 5.07,  "pass": true },
+      { "pair": "muted on surface",     "fg": "#6E6B68", "bg": "#FFFFFF", "ratio": 5.30,  "pass": true },
+      { "pair": "muted on raised",      "fg": "#6E6B68", "bg": "#F5F5F5", "ratio": 4.86,  "pass": true },
+      { "pair": "onAccent on accent",   "fg": "#FFFFFF", "bg": "#C8371B", "ratio": 5.23,  "pass": true },
+      { "pair": "accent text on bg",    "fg": "#C8371B", "bg": "#FAFAFA", "ratio": 5.01,  "pass": true },
+      { "pair": "white on success",     "fg": "#FFFFFF", "bg": "#2F7A4F", "ratio": 5.23,  "pass": true },
+      { "pair": "white on warning",     "fg": "#FFFFFF", "bg": "#9A6A0B", "ratio": 4.73,  "pass": true },
+      { "pair": "white on danger",      "fg": "#FFFFFF", "bg": "#B32E28", "ratio": 6.29,  "pass": true },
+      { "pair": "info on bg",           "fg": "#4A6270", "bg": "#FAFAFA", "ratio": 6.15,  "pass": true },
+      { "pair": "accentPressed white",  "fg": "#FFFFFF", "bg": "#A82E17", "ratio": 6.84,  "pass": true }
+    ],
+    "allPass": true
+  },
+
+  "typography": {
+    "_fontFamily": "PingFang SC, Noto Sans SC, Microsoft YaHei, sans-serif",
+    "_weights": { "regular": 400, "medium": 500, "max": 500 },
+    "_letterSpacing": "0 (中文一律不用负字距)",
+    "_rules": "单屏最多 5 档；正文≥16px；中文正文行高1.7、标题1.3",
+    "scale": {
+      "t1": { "px": 11, "rpx": 22, "lineHeight": 1.0, "weight": 400, "usage": "徽章数字/角标" },
+      "t2": { "px": 12, "rpx": 24, "lineHeight": 1.5, "weight": 400, "usage": "来源说明/时间戳" },
+      "t3": { "px": 13, "rpx": 26, "lineHeight": 1.6, "weight": 400, "usage": "辅助说明/空态副文" },
+      "t4": { "px": 14, "rpx": 28, "lineHeight": 1.6, "weight": 400, "usage": "证据原话/理由正文" },
+      "t5": { "px": 16, "rpx": 32, "lineHeight": 1.7, "weight": 400, "usage": "正文/输入框(下限档)" },
+      "t6": { "px": 18, "rpx": 36, "lineHeight": 1.4, "weight": 500, "usage": "按钮文字/小标题" },
+      "t7": { "px": 24, "rpx": 48, "lineHeight": 1.3, "weight": 500, "usage": "列表店名/页面标题" },
+      "t8": { "px": 30, "rpx": 60, "lineHeight": 1.3, "weight": 500, "usage": "答案主角店名(首屏焦点)" }
+    },
+    "roles": {
+      "display": "t8",
+      "title": "t7",
+      "body": "t5",
+      "quote": "t4",
+      "caption": "t3"
+    }
+  },
+
+  "spacing": {
+    "_unit": "px (rpx = px × 2)",
+    "_rule": "padding/margin/gap 只能取下列 7 档，禁止 5/7/13/15/22 等非标值",
+    "scale": {
+      "xs":  { "px": 4,  "rpx": 8  },
+      "sm":  { "px": 8,  "rpx": 16 },
+      "md":  { "px": 12, "rpx": 24 },
+      "lg":  { "px": 16, "rpx": 32 },
+      "xl":  { "px": 24, "rpx": 48 },
+      "2xl": { "px": 32, "rpx": 64 },
+      "3xl": { "px": 48, "rpx": 96 }
+    }
+  },
+
+  "radius": {
+    "_rule": "按角色取，卡片上限 12px，不到 24px；不出现 10/14/18/24 孤立值",
+    "sm":   { "px": 4,  "rpx": 8,  "usage": "verdict 徽章/tag" },
+    "md":   { "px": 8,  "rpx": 16, "usage": "按钮/输入框" },
+    "lg":   { "px": 12, "rpx": 24, "usage": "答案卡/原话卡" },
+    "sheet":{ "px": 16, "rpx": 32, "usage": "为什么推荐页底部圆角" }
+  },
+
+  "container": {
+    "sideGutter": "32rpx",
+    "contentWidth": "calc(100vw - 64rpx)",
+    "exceptionSections": [],
+    "safeAreaBottom": "env(safe-area-inset-bottom)"
+  },
+
+  "shadow": {
+    "_rule": "高度二选一：浮起表面用阴影(border:0)，平面表面用发丝描边(无阴影)，两者永不叠加",
+    "toast": { "value": "0 8rpx 32rpx rgba(29,28,27,0.14)", "usage": "仅全局 Toast" },
+    "sheet": { "value": "0 -4rpx 32rpx rgba(29,28,27,0.10)", "usage": "仅底部展开页顶缘" }
+  },
+
+  "motion": {
+    "_rule": "无装饰动效；全部有目的、可中断；reduced-motion 下直接显示终态",
+    "instant": { "ms": 80,  "easing": "ease-out", "usage": "按钮按下、tab 切换" },
+    "confirm": { "ms": 150, "easing": "ease-out", "usage": "状态确认收敛值(基准)" },
+    "enter":   { "ms": 240, "easing": "cubic-bezier(0.2,0,0,1)", "usage": "答案卡/原话卡进入" },
+    "strike":  { "ms": 300, "easing": "cubic-bezier(0.2,0,0,1)", "usage": "换一家时红笔删除线绘制" },
+    "sheet":   { "ms": 300, "easing": "ease-in-out", "usage": "为什么推荐页滑入" },
+    "typewriter": { "msPerChar": 28, "easing": "linear", "usage": "非流式答案逐字显示；reduced-motion 下整段直出" },
+    "reducedMotion": {
+      "typewriter": "show-full-instantly",
+      "strike": "show-final-strikethrough",
+      "sheet": "no-slide"
+    },
+    "banned": ["bounce/cubic-bezier(0.68,-0.55,0.265,1.55)", ">500ms 交互", "装饰性持续动画"]
+  },
+
+  "icon": {
+    "system": "inline SVG symbol (自绘线性图标，非第三方库、非 emoji)",
+    "viewBox": "0 0 24 24",
+    "sizes": { "inline": 16, "button": 20, "standalone": 24 },
+    "stroke": "currentColor",
+    "assets": ["bowl", "search", "bookmark", "clock", "info", "warn", "refresh", "back"],
+    "emojiAllowed": false,
+    "extraMarks": ["svg-circle(圈定)", "svg-cross(划掉)", "svg-check(褒)", "svg-wave(有争议)"]
+  }
+}

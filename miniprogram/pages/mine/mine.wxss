@@ -1,0 +1,50 @@
+.mine-head {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-sm);
+}
+.mine-title { color: var(--ink); font-size: var(--fs-t7); font-weight: 500; line-height: 1.3; }
+.mine-count {
+  display: inline-flex;
+  min-width: var(--sp-xl);
+  min-height: var(--sp-xl);
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--r-sm);
+  background: var(--raised);
+  color: var(--muted);
+  font-size: var(--fs-t3);
+}
+
+.mine-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-top: var(--sp-2xl);
+}
+.mine-empty-btn { margin-top: var(--sp-lg); }
+
+.mine-list { margin-top: var(--sp-lg); }
+.mine-row {
+  display: flex;
+  min-height: var(--tap-min);
+  align-items: center;
+  gap: var(--sp-sm);
+  padding: var(--sp-sm) 0;
+  border-bottom: var(--hairline) solid var(--border);
+}
+.mine-name {
+  flex: 1;
+  color: var(--ink);
+  font-size: var(--fs-t7);
+  font-weight: 500;
+  line-height: 1.3;
+}
+.mine-del {
+  display: inline-flex;
+  width: var(--tap-min);
+  height: var(--tap-min);
+  align-items: center;
+  justify-content: center;
+}
+.mine-del-icon { width: var(--icon-md); height: var(--icon-md); }

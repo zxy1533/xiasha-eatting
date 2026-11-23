@@ -1,0 +1,23 @@
+{
+  "description": "下沙今天吃什么 - 避雷与问答推荐小程序（微信云开发工程根）",
+  "packOptions": {
+    "ignore": [
+      { "type": "folder", "value": ".workbuddy" },
+      { "type": "folder", "value": "research" },
+      { "type": "folder", "value": "docs" }
+    ],
+    "include": []
+  },
+  "setting": {
+    "bundle": false,
+    "es6": true,
+    "minified": true,
+    "postcss": true,
+    "urlCheck": false
+  },
+  "compileType": "miniprogram",
+  "appid": "touristappid",
+  "projectname": "xiasha-eat-what",
+  "miniprogramRoot": "miniprogram/",
+  "cloudfunctionRoot": "cloud-functions/"
+}

@@ -1,0 +1,29 @@
+<view class="u-page mine">
+  <toast-host />
+
+  <view class="mine-head">
+    <text class="mine-title">我攒的店</text>
+    <text class="mine-count u-num">{{total}}</text>
+  </view>
+  <text class="u-hint">只存在这台手机上，换个手机就没了</text>
+
+  <view class="mine-empty" wx:if="{{total === 0}}">
+    <text class="u-hint">还没攒店。查到能吃的，点书签存这儿。</text>
+    <button class="u-btn-secondary mine-empty-btn" bindtap="gotoAvoid" aria-label="去查店">去查店</button>
+  </view>
+
+  <view class="mine-list" wx:if="{{total > 0}}">
+    <view class="mine-row" wx:for="{{items}}" wx:key="id">
+      <text class="mine-name">{{item.name}}</text>
+      <verdict-badge verdict="{{item.verdict}}" />
+      <button
+        class="mine-del"
+        bindtap="removeItem"
+        data-id="{{item.id}}"
+        aria-label="删除 {{item.name}}"
+      >
+        <image class="mine-del-icon" src="/assets/icons/close.svg" aria-hidden="true" />
+      </button>
+    </view>
+  </view>
+</view>
