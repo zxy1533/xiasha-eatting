@@ -6,7 +6,573 @@
   <meta name="theme-color" content="#FAFAFA" />
   <meta name="description" content="下沙高校圈「今天吃什么」：查店避雷 + 问答机器人帮你拍板，只看同学原话，不给星级。" />
   <title>今天吃什么</title>
-  <link rel="stylesheet" href="css/app.css" />
+  <style>
+/* ============================================================
+   下沙「今天吃什么」网页版
+   全部数值取自 design-tokens.json（rpx ÷ 2 = px）。
+   学生避雷小抄：朱红 #C8371B 唯一强调色，奶白底 #FAFAFA，无星级无社区。
+   ============================================================ */
+
+:root {
+  /* color */
+  --bg: #FAFAFA;
+  --surface: #FFFFFF;
+  --raised: #F5F5F5;
+  --border: #E4E3E2;
+  --ink: #1D1C1B;
+  --muted: #6E6B68;
+  --accent: #C8371B;
+  --accent-pressed: #A82E17;
+  --on-accent: #FFFFFF;
+  --success: #2F7A4F;
+  --warning: #9A6A0B;
+  --danger: #B32E28;
+  --info: #4A6270;
+  --tint-good: rgba(47, 122, 79, 0.10);
+  --tint-warn: rgba(154, 106, 11, 0.10);
+  --tint-bad: rgba(179, 46, 40, 0.10);
+  --tint-info: rgba(74, 98, 112, 0.10);
+  --tint-accent: rgba(200, 55, 27, 0.10);
+  --accent-on-dark: #FBE3DC;
+
+  /* spacing（7 档） */
+  --sp-xs: 4px;
+  --sp-sm: 8px;
+  --sp-md: 12px;
+  --sp-lg: 16px;
+  --sp-xl: 24px;
+  --sp-2xl: 32px;
+  --sp-3xl: 48px;
+
+  /* typography（八档，单屏 ≤5 档） */
+  --fs-t1: 11px;
+  --fs-t2: 12px;
+  --fs-t3: 13px;
+  --fs-t4: 14px;
+  --fs-t5: 16px;
+  --fs-t6: 18px;
+  --fs-t7: 24px;
+  --fs-t8: 30px;
+
+  /* radius（按角色取） */
+  --r-sm: 4px;
+  --r-md: 8px;
+  --r-lg: 12px;
+  --r-sheet: 16px;
+
+  /* 其它 */
+  --gutter: 16px;
+  --tap-min: 44px;
+  --icon-xs: 12px;
+  --icon-sm: 16px;
+  --icon-md: 20px;
+  --icon-lg: 24px;
+  --hairline: 1px;
+
+  --elev-toast: 0 8px 32px rgba(29, 28, 27, 0.14);
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --dur-instant: 80ms;
+  --dur-confirm: 150ms;
+  --dur-enter: 240ms;
+  --dur-strike: 300ms;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  font-size: var(--fs-t5);
+  line-height: 1.7;
+  letter-spacing: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  padding: 0;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  line-height: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+button:disabled { cursor: default; }
+input {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  outline: none;
+}
+
+a { color: inherit; text-decoration: none; }
+
+/* ---------- 顶部栏 ---------- */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  display: flex;
+  height: 44px;
+  align-items: center;
+  gap: var(--sp-xs);
+  padding: 0 var(--gutter);
+  background: var(--surface);
+  border-bottom: var(--hairline) solid var(--border);
+}
+.topbar-back {
+  display: inline-flex;
+  width: var(--tap-min);
+  height: var(--tap-min);
+  align-items: center;
+  justify-content: flex-start;
+  margin-left: calc(var(--gutter) * -1);
+  color: var(--ink);
+}
+.topbar-title {
+  color: var(--ink);
+  font-size: var(--fs-t6);
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+/* ---------- 内容与底部 tab ---------- */
+.view {
+  padding: var(--sp-lg) var(--gutter) calc(var(--sp-2xl) + 68px);
+  min-height: 100vh;
+}
+
+.tabbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 300;
+  display: flex;
+  height: 56px;
+  padding-bottom: env(safe-area-inset-bottom);
+  background: var(--surface);
+  border-top: var(--hairline) solid var(--border);
+}
+.tabbar[hidden] { display: none; }
+.tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  color: var(--muted);
+  font-size: var(--fs-t1);
+  line-height: 1;
+}
+.tab .ic { width: 22px; height: 22px; }
+.tab--active { color: var(--accent); }
+
+/* ---------- 通用组件 ---------- */
+.u-card {
+  background: var(--surface);
+  border: var(--hairline) solid var(--border);
+  border-radius: var(--r-lg);
+}
+
+.u-btn-primary {
+  display: flex;
+  min-height: var(--tap-min);
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-sm);
+  padding: 0 var(--sp-lg);
+  border-radius: var(--r-md);
+  background: var(--accent);
+  color: var(--on-accent);
+  font-size: var(--fs-t6);
+  font-weight: 500;
+  line-height: 1.4;
+  transition: background-color var(--dur-instant) ease-out, transform var(--dur-instant) ease-out;
+}
+.u-btn-primary:active { background: var(--accent-pressed); transform: scale(0.98); }
+.u-btn-primary:disabled {
+  background: var(--raised);
+  color: var(--muted);
+  border: var(--hairline) solid var(--border);
+}
+
+.u-btn-secondary {
+  display: flex;
+  min-height: var(--tap-min);
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-xs);
+  padding: 0 var(--sp-md);
+  border: var(--hairline) solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: var(--fs-t5);
+  transition: background-color var(--dur-instant) ease-out;
+}
+.u-btn-secondary:active { background: var(--raised); }
+.u-btn-secondary:disabled { color: var(--muted); background: var(--raised); }
+
+.u-chip {
+  display: inline-flex;
+  min-height: var(--tap-min);
+  align-items: center;
+  padding: 0 var(--sp-md);
+  border-radius: var(--r-sm);
+  background: var(--raised);
+  color: var(--ink);
+  font-size: var(--fs-t5);
+  transition: background-color var(--dur-instant) ease-out;
+}
+.u-chip:active { background: var(--border); }
+
+.u-hint { color: var(--muted); font-size: var(--fs-t3); line-height: 1.6; }
+.u-caption { color: var(--muted); font-size: var(--fs-t2); line-height: 1.5; }
+.u-num { font-variant-numeric: tabular-nums; }
+
+.ic { display: inline-block; flex-shrink: 0; }
+
+/* ---------- 打字机 ---------- */
+.as { display: block; white-space: pre-wrap; overflow-wrap: anywhere; }
+.as-char { opacity: 0; animation: char-in 80ms linear forwards; }
+@keyframes char-in { to { opacity: 1; } }
+
+/* ---------- verdict 徽章 ---------- */
+.vb {
+  display: inline-flex;
+  min-height: var(--sp-xl);
+  align-items: center;
+  gap: var(--sp-xs);
+  padding: 0 var(--sp-xs);
+  border-radius: var(--r-sm);
+  font-size: var(--fs-t2);
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+}
+.vb-lg { font-size: var(--fs-t3); }
+.vb .ic { width: var(--icon-xs); height: var(--icon-xs); }
+.vb-good { background: var(--tint-good); color: var(--success); }
+.vb-bad  { background: var(--tint-bad);  color: var(--danger); }
+.vb-warn { background: var(--tint-warn); color: var(--warning); }
+
+/* ---------- 原话卡 ---------- */
+.ec {
+  position: relative;
+  padding: var(--sp-md) var(--sp-md) var(--sp-sm) var(--sp-xl);
+  background: var(--raised);
+  border-radius: var(--r-lg);
+}
+.ec-quote {
+  position: absolute;
+  left: var(--sp-sm);
+  top: var(--sp-md);
+  width: var(--icon-xs);
+  height: var(--icon-xs);
+  color: var(--muted);
+}
+.ec-text {
+  display: block;
+  color: var(--ink);
+  font-size: var(--fs-t4);
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.ec-clamp {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+}
+.ec-more {
+  display: inline-block;
+  min-height: var(--sp-xl);
+  padding: var(--sp-xs) 0 0;
+  color: var(--accent);
+  font-size: var(--fs-t3);
+}
+
+/* ---------- usage-tip ---------- */
+.ut {
+  display: flex;
+  min-height: var(--sp-2xl);
+  align-items: center;
+  gap: var(--sp-xs);
+  padding: var(--sp-xs) 0;
+}
+.ut-icon { width: var(--icon-sm); height: var(--icon-sm); flex-shrink: 0; }
+.ut-text { flex: 1; font-size: var(--fs-t3); line-height: 1.6; }
+.ut-action {
+  display: inline-flex;
+  min-height: var(--tap-min);
+  align-items: center;
+  padding: 0 var(--sp-sm);
+  color: var(--accent);
+  font-size: var(--fs-t3);
+}
+.ut-info .ut-text { color: var(--info); }
+.ut-warning .ut-text { color: var(--warning); }
+.ut-danger .ut-text { color: var(--danger); }
+
+/* ---------- Toast（app 级覆盖层） ---------- */
+.toast {
+  position: fixed;
+  left: var(--gutter);
+  right: var(--gutter);
+  bottom: calc(var(--sp-xl) + env(safe-area-inset-bottom));
+  z-index: 500;
+  display: flex;
+  min-height: var(--tap-min);
+  align-items: center;
+  gap: var(--sp-sm);
+  padding: var(--sp-sm) var(--sp-md);
+  border-radius: var(--r-md);
+  background: var(--ink);
+  box-shadow: var(--elev-toast);
+  opacity: 0;
+  transform: translateY(var(--sp-sm));
+  pointer-events: none;
+  transition: opacity var(--dur-enter) ease-out, transform var(--dur-enter) ease-out;
+}
+.toast--show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+.toast__text { flex: 1; color: var(--surface); font-size: var(--fs-t4); line-height: 1.5; }
+.toast__action {
+  display: inline-flex;
+  min-height: var(--tap-min);
+  align-items: center;
+  color: var(--accent-on-dark);
+  font-size: var(--fs-t4);
+  font-weight: 500;
+}
+.toast__close {
+  display: inline-flex;
+  width: var(--tap-min);
+  height: var(--tap-min);
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+}
+.toast__close .ic { width: var(--icon-sm); height: var(--icon-sm); }
+
+/* ============================================================
+   首页「吃什么」
+   ============================================================ */
+.idx-lead { display: block; color: var(--ink); font-size: var(--fs-t6); font-weight: 500; line-height: 1.4; }
+
+.idx-input-wrap { margin-top: var(--sp-sm); }
+.idx-input {
+  width: 100%;
+  min-height: var(--tap-min);
+  padding: 0 var(--sp-md);
+  border: var(--hairline) solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: var(--fs-t5);
+  line-height: 1.7;
+}
+.idx-input:focus { border-color: var(--accent); }
+.idx-input::placeholder { color: var(--muted); }
+
+.idx-submit { width: 100%; margin-top: var(--sp-md); }
+.idx-bowl { width: var(--icon-md); height: var(--icon-md); }
+
+.idx-chips { display: flex; flex-wrap: wrap; gap: var(--sp-sm); margin-top: var(--sp-lg); }
+.idx-help { display: block; margin-top: var(--sp-sm); }
+
+.idx-ghosts { margin-top: var(--sp-lg); }
+.ghost {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-sm);
+  min-height: var(--sp-2xl);
+}
+.ghost-name { color: var(--muted); font-size: var(--fs-t4); }
+.ghost-line {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 100%;
+  height: 2px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+.ghost-fresh .ghost-line { animation: strike-draw var(--dur-strike) var(--ease-standard) forwards; }
+.ghost:not(.ghost-fresh) .ghost-line { transform: scaleX(1); }
+.ghost-note { margin-left: auto; color: var(--danger); font-size: var(--fs-t2); }
+@keyframes strike-draw {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+.idx-loading { margin-top: var(--sp-xl); }
+
+.idx-answer {
+  margin-top: var(--sp-xl);
+  padding: var(--sp-lg);
+  transition: opacity var(--dur-enter) ease-out, transform var(--dur-enter) ease-out;
+}
+.idx-fade { opacity: 0; transform: translateY(var(--sp-xs)); }
+
+.idx-summary { display: block; color: var(--ink); font-size: var(--fs-t5); line-height: 1.6; }
+
+.idx-shop { margin-top: var(--sp-lg); padding-top: var(--sp-lg); border-top: var(--hairline) solid var(--border); }
+.idx-shop-first { margin-top: var(--sp-md); padding-top: 0; border-top: 0; }
+
+.idx-title-row { display: flex; align-items: center; gap: var(--sp-sm); }
+.idx-circle { width: var(--icon-lg); height: var(--icon-lg); flex-shrink: 0; color: var(--accent); }
+.idx-display { color: var(--ink); font-size: var(--fs-t7); font-weight: 500; line-height: 1.3; }
+.idx-reason { display: block; margin-top: var(--sp-md); color: var(--ink); font-size: var(--fs-t4); line-height: 1.6; }
+.idx-badge-row { margin-top: var(--sp-md); }
+.idx-evidence { margin-top: var(--sp-sm); }
+.idx-eq + .idx-eq { margin-top: var(--sp-sm); }
+.idx-why-btn { width: 100%; margin-top: var(--sp-md); }
+
+.idx-actions { display: flex; gap: var(--sp-sm); margin-top: var(--sp-lg); }
+.idx-actions .u-btn-secondary { flex: 1; }
+.idx-refresh { width: var(--icon-sm); height: var(--icon-sm); }
+.idx-answer .u-caption { display: block; margin-top: var(--sp-sm); color: var(--muted); font-size: var(--fs-t3); text-align: right; }
+
+/* ============================================================
+   避雷查询
+   ============================================================ */
+.av-search {
+  display: flex;
+  min-height: var(--tap-min);
+  align-items: center;
+  gap: var(--sp-xs);
+  padding: 0 var(--sp-sm);
+  border: var(--hairline) solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface);
+}
+.av-search-icon { width: var(--icon-sm); height: var(--icon-sm); color: var(--muted); flex-shrink: 0; }
+.av-input { flex: 1; min-height: var(--tap-min); color: var(--ink); font-size: var(--fs-t5); }
+.av-input::placeholder { color: var(--muted); }
+.av-go {
+  display: inline-flex;
+  min-width: var(--tap-min);
+  min-height: var(--tap-min);
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+  font-size: var(--fs-t5);
+  font-weight: 500;
+}
+
+.av-chips-title { margin-top: var(--sp-lg); }
+.av-chips { display: flex; flex-wrap: wrap; gap: var(--sp-sm); margin-top: var(--sp-sm); }
+.av-honest { display: block; margin-top: var(--sp-md); }
+
+.av-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: var(--sp-2xl);
+  text-align: center;
+}
+.av-empty-title { color: var(--ink); font-size: var(--fs-t7); font-weight: 500; line-height: 1.3; }
+.av-empty-btn { margin-top: var(--sp-lg); }
+
+.av-results { margin-top: var(--sp-md); }
+.av-match { margin-top: var(--sp-md); padding: var(--sp-lg); }
+.av-match-head { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-sm); }
+.av-name { color: var(--ink); font-size: var(--fs-t7); font-weight: 500; line-height: 1.3; }
+.av-source { display: block; margin-top: var(--sp-xs); }
+.av-evidence { margin-top: var(--sp-md); }
+.av-eq + .av-eq { margin-top: var(--sp-sm); }
+.av-match-actions { display: flex; gap: var(--sp-sm); margin-top: var(--sp-lg); }
+.av-match-actions .u-btn-secondary { flex: 1; }
+.av-icon { width: var(--icon-sm); height: var(--icon-sm); }
+
+/* ============================================================
+   我的清单
+   ============================================================ */
+.mine-head { display: flex; align-items: center; gap: var(--sp-sm); }
+.mine-title { color: var(--ink); font-size: var(--fs-t7); font-weight: 500; line-height: 1.3; }
+.mine-count {
+  display: inline-flex;
+  min-width: var(--sp-xl);
+  min-height: var(--sp-xl);
+  align-items: center;
+  justify-content: center;
+  padding: 0 var(--sp-xs);
+  border-radius: var(--r-sm);
+  background: var(--raised);
+  color: var(--muted);
+  font-size: var(--fs-t3);
+}
+
+.mine-empty { display: flex; flex-direction: column; align-items: flex-start; margin-top: var(--sp-2xl); }
+.mine-empty-btn { margin-top: var(--sp-lg); }
+
+.mine-list { margin-top: var(--sp-lg); }
+.mine-row {
+  display: flex;
+  min-height: var(--tap-min);
+  align-items: center;
+  gap: var(--sp-sm);
+  padding: var(--sp-sm) 0;
+  border-bottom: var(--hairline) solid var(--border);
+}
+.mine-name { flex: 1; color: var(--ink); font-size: var(--fs-t7); font-weight: 500; line-height: 1.3; }
+.mine-del {
+  display: inline-flex;
+  width: var(--tap-min);
+  height: var(--tap-min);
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+}
+.mine-del .ic { width: var(--icon-md); height: var(--icon-md); }
+
+/* ============================================================
+   为什么推荐
+   ============================================================ */
+.why-head { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-sm); margin-top: var(--sp-md); }
+.why-name { color: var(--ink); font-size: var(--fs-t7); font-weight: 500; line-height: 1.3; }
+.why-subtitle { display: block; margin-top: var(--sp-xl); color: var(--ink); font-size: var(--fs-t5); font-weight: 500; }
+.why-reason { display: block; margin-top: var(--sp-sm); color: var(--ink); font-size: var(--fs-t4); line-height: 1.6; }
+.why-disputed {
+  margin-top: var(--sp-md);
+  padding: var(--sp-sm) var(--sp-md);
+  border-radius: var(--r-sm);
+  background: var(--tint-warn);
+  color: var(--warning);
+  font-size: var(--fs-t4);
+  line-height: 1.6;
+}
+.why-note { display: block; margin-top: var(--sp-lg); }
+.why-evidence { margin-top: var(--sp-sm); }
+.why-eq + .why-eq { margin-top: var(--sp-sm); }
+.why-empty { display: flex; flex-direction: column; align-items: flex-start; margin-top: var(--sp-2xl); }
+.why-empty-title { color: var(--ink); font-size: var(--fs-t5); line-height: 1.7; }
+.why-empty-btn { margin-top: var(--sp-lg); }
+.why-actions { display: flex; flex-direction: column; gap: var(--sp-sm); margin-top: var(--sp-xl); padding-bottom: env(safe-area-inset-bottom); }
+.why-actions .u-btn-secondary { width: 100%; }
+
+/* ---------- 动效降级 ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+</style>
 </head>
 <body>
   <header class="topbar">
@@ -33,11 +599,1033 @@
     </button>
   </nav>
 
-  <script src="js/api.js"></script>
-  <script src="js/store.js"></script>
-  <script src="js/toast.js"></script>
-  <script src="js/components.js"></script>
-  <script src="js/views.js"></script>
-  <script src="js/app.js"></script>
+  <script>
+/**
+ * 调用层：fetch 调后端三个 /api 接口，保留信封 {code, data, message} 归一。
+ * device_id 用 localStorage 生成匿名号，放 x-device-id 头 + body 里（后端只认头）。
+ * API_BASE 默认同源（server.js 同时 serve 静态页与 /api）；本地联调可用 ?api=http://localhost:8080 覆盖。
+ */
+(function (EatWhat) {
+  var API_BASE = (function () {
+    var m = /[?&]api=([^&]+)/.exec(window.location.search);
+    if (m) return decodeURIComponent(m[1]).replace(/\/+$/, '');
+    return '';
+  })();
+
+  // The publish gateway requires `sharecode` on every request (page AND /api).
+  // Carry it from the current page URL onto every API call so the SPA works
+  // behind the WorkBuddy share link. Local dev has no sharecode -> no-op.
+  var SHARE_QUERY = (function () {
+    var m = /[?&]sharecode=([^&]+)/.exec(window.location.search);
+    return m ? 'sharecode=' + encodeURIComponent(m[1]) : '';
+  })();
+
+  function withShare(path) {
+    if (!SHARE_QUERY) return path;
+    return path + (path.indexOf('?') >= 0 ? '&' : '?') + SHARE_QUERY;
+  }
+
+  var CALL_TIMEOUT_MS = 30000; // DeepSeek 深度思考 9~18s，放宽到 30s
+
+  function deviceId() {
+    var KEY = 'eatwhat_device_id_v1';
+    try {
+      var id = window.localStorage.getItem(KEY);
+      if (!id) {
+        id = 'd_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 10);
+        window.localStorage.setItem(KEY, id);
+      }
+      return id;
+    } catch (err) {
+      return 'd_anon';
+    }
+  }
+
+  function request(path, options) {
+    var opts = options || {};
+    var method = opts.method || 'GET';
+    var headers = Object.assign({
+      'Content-Type': 'application/json',
+      'x-device-id': deviceId(),
+    }, opts.headers || {});
+    var body = opts.body !== undefined ? JSON.stringify(opts.body) : undefined;
+
+    var ctrl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+    var timer = ctrl ? setTimeout(function () { ctrl.abort(); }, CALL_TIMEOUT_MS) : null;
+    function done() { if (timer) { clearTimeout(timer); timer = null; } }
+
+    return fetch(API_BASE + withShare(path), {
+      method: method,
+      headers: headers,
+      body: body,
+      signal: ctrl ? ctrl.signal : undefined,
+    }).then(function (res) {
+      done();
+      return res.json().catch(function () {
+        return { code: 50003, data: null, message: '服务暂不可用' };
+      });
+    }).catch(function (err) {
+      done();
+      if (err && err.name === 'AbortError') {
+        return { code: 50001, data: null, message: '今天有点忙，等下再问一次' };
+      }
+      return { code: 'offline', data: null, message: '没网了，连上再说' };
+    });
+  }
+
+  function normalizeRestaurant(raw) {
+    if (!raw || !raw.restaurant_id || !raw.restaurant_name) return null;
+    return {
+      restaurant_id: String(raw.restaurant_id),
+      restaurant_name: String(raw.restaurant_name),
+      reason: String(raw.reason || ''),
+      evidence: (Array.isArray(raw.evidence) ? raw.evidence : []).map(String).filter(function (s) { return s.length > 0; }).slice(0, 10),
+      verdict: (raw.verdict === '褒' || raw.verdict === '贬' || raw.verdict === '有争议') ? raw.verdict : '有争议',
+    };
+  }
+
+  function normalizeAnswer(raw) {
+    if (!raw) return null;
+    if (Array.isArray(raw.restaurants)) {
+      var list = raw.restaurants.map(normalizeRestaurant).filter(function (r) { return r !== null && r.evidence.length > 0; });
+      if (list.length === 0) return null;
+      return { summary: String(raw.summary || ''), restaurants: list };
+    }
+    var single = normalizeRestaurant(raw);
+    if (!single) return null;
+    return { summary: '', restaurants: [single] };
+  }
+
+  function normalizeMatch(raw) {
+    return {
+      id: String(raw.id || ''),
+      name: String(raw.name || ''),
+      verdict: (raw.verdict === '褒' || raw.verdict === '贬' || raw.verdict === '有争议') ? raw.verdict : '有争议',
+      evidence: (Array.isArray(raw.evidence) ? raw.evidence : []).map(String).filter(function (s) { return s.length > 0; }).slice(0, 2),
+      tags: Array.isArray(raw.tags) ? raw.tags.slice(0, 6) : [],
+      source_sheet: String(raw.source_sheet || ''),
+      mention_count: Number(raw.mention_count) || 1,
+    };
+  }
+
+  EatWhat.api = {
+    recommend: function (question, exclude) {
+      return request('/api/recommend', {
+        method: 'POST',
+        body: { question: question, exclude: exclude, device_id: deviceId() },
+      }).then(function (env) {
+        if (!env || env.code !== 0 || !env.data || !env.data.answer) return env;
+        var answer = normalizeAnswer(env.data.answer);
+        if (!answer) return { code: 50002, data: null, message: '这次没挑出来，换个说法试试' };
+        env.data.answer = answer;
+        return env;
+      });
+    },
+    avoid: function (query) {
+      return request('/api/avoid', { method: 'POST', body: { query: query } }).then(function (env) {
+        if (!env || env.code !== 0 || !env.data) return env;
+        var raw = Array.isArray(env.data.matches) ? env.data.matches : [];
+        env.data.matches = raw.slice(0, 5).map(normalizeMatch);
+        env.data.found = env.data.found === true;
+        return env;
+      });
+    },
+    usage: function () {
+      return request('/api/usage', { method: 'GET' });
+    },
+  };
+
+  EatWhat.normalizeAnswer = normalizeAnswer;
+  EatWhat.deviceId = deviceId;
+})(window.EatWhat = window.EatWhat || {});
+
+</script>
+  <script>
+/**
+ * 我的清单（localStorage）+ 页面间传值（answer bus + 换一家 pending + 返回路由）。
+ * 不联网、不建账号；读取处做边界校验，和 miniprogram/services/storage.js 同契约。
+ */
+(function (EatWhat) {
+  var KEY = 'xiasha_eat_what_list_v1';
+  var MAX_ITEMS = 200;
+
+  function validItem(item) {
+    return !!item
+      && typeof item.id === 'string' && /^r_[0-9]{4,}$/.test(item.id)
+      && typeof item.name === 'string' && item.name.length >= 1 && item.name.length <= 20
+      && (item.verdict === '褒' || item.verdict === '贬' || item.verdict === '有争议');
+  }
+
+  function readAll() {
+    try {
+      var raw = window.localStorage.getItem(KEY);
+      if (!raw) return [];
+      var parsed = JSON.parse(raw);
+      if (!Array.isArray(parsed)) return [];
+      return parsed.filter(validItem).slice(0, MAX_ITEMS).map(function (item) {
+        return { id: item.id, name: item.name, verdict: item.verdict, addedAt: Number(item.addedAt) || 0 };
+      });
+    } catch (err) {
+      console.warn('storage read failed', err && err.name);
+      return [];
+    }
+  }
+
+  function writeAll(items) {
+    try {
+      window.localStorage.setItem(KEY, JSON.stringify(items.slice(0, MAX_ITEMS)));
+      return true;
+    } catch (err) {
+      console.warn('storage write failed', err && err.name);
+      return false;
+    }
+  }
+
+  function add(restaurant) {
+    var items = readAll();
+    if (!validItem(restaurant)) return { ok: false, reason: 'invalid', items: items };
+    if (items.some(function (it) { return it.id === restaurant.id; })) {
+      return { ok: false, reason: 'exists', items: items };
+    }
+    var next = [{ id: restaurant.id, name: restaurant.name, verdict: restaurant.verdict, addedAt: Date.now() }].concat(items);
+    return { ok: writeAll(next), reason: 'added', items: readAll() };
+  }
+
+  function remove(id) {
+    var items = readAll();
+    var index = -1;
+    for (var i = 0; i < items.length; i += 1) { if (items[i].id === id) { index = i; break; } }
+    if (index < 0) return { ok: false, removed: null, index: -1, items: items };
+    var removed = items[index];
+    items.splice(index, 1);
+    var ok = writeAll(items);
+    return { ok: ok, removed: ok ? removed : null, index: index, items: readAll() };
+  }
+
+  function restore(item, index) {
+    if (!validItem(item)) return { ok: false, items: readAll() };
+    var items = readAll();
+    if (items.some(function (it) { return it.id === item.id; })) return { ok: true, items: items };
+    var at = Math.max(0, Math.min(index, items.length));
+    items.splice(at, 0, item);
+    return { ok: writeAll(items), items: readAll() };
+  }
+
+  function has(id) {
+    return readAll().some(function (it) { return it.id === id; });
+  }
+
+  // —— 页面间传值 ——
+  var lastAnswer = null;
+  var returnRoute = 'index';
+  var pendingChangeOne = false;
+
+  EatWhat.store = {
+    readAll: readAll,
+    add: add,
+    remove: remove,
+    restore: restore,
+    has: has,
+    setAnswer: function (a) { lastAnswer = a || null; },
+    getAnswer: function () { return lastAnswer; },
+    setReturnRoute: function (r) { returnRoute = r || 'index'; },
+    getReturnRoute: function () { return returnRoute; },
+    setPendingChangeOne: function () { pendingChangeOne = true; },
+    consumeChangeOne: function () { var p = pendingChangeOne; pendingChangeOne = false; return p; },
+  };
+})(window.EatWhat = window.EatWhat || {});
+
+</script>
+  <script>
+/**
+ * 全局 Toast 总线：宿主是挂在 body 上的固定覆盖层，删除清单行后不会随行卸载。
+ * 文案用 textContent 写入，天然防 XSS。
+ */
+(function (EatWhat) {
+  var el = null;
+  var actionFn = null;
+  var timer = null;
+
+  function ensureEl() {
+    if (el) return el;
+    el = document.createElement('div');
+    el.className = 'toast';
+    el.setAttribute('role', 'status');
+    el.setAttribute('aria-live', 'polite');
+    document.body.appendChild(el);
+    return el;
+  }
+
+  function hide() {
+    if (!el) return;
+    el.classList.remove('toast--show');
+    if (timer) { clearTimeout(timer); timer = null; }
+  }
+
+  function show(options) {
+    var opts = options || {};
+    actionFn = typeof opts.onAction === 'function' ? opts.onAction : null;
+    var host = ensureEl();
+    var actionText = typeof opts.actionText === 'string' ? opts.actionText : '';
+
+    var inner = '<span class="toast__text"></span>';
+    if (actionText) {
+      inner += '<button class="toast__action" data-action="toast-action"></button>';
+    } else {
+      inner += '<button class="toast__close" data-action="toast-close" aria-label="关闭提示">' +
+        '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m6 6 12 12M18 6 6 18"/></svg></button>';
+    }
+    host.innerHTML = inner;
+    host.querySelector('.toast__text').textContent = opts.text || '';
+    if (actionText) host.querySelector('.toast__action').textContent = actionText;
+
+    host.classList.add('toast--show');
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(hide, opts.duration || 5000);
+  }
+
+  function runAction() {
+    var fn = actionFn;
+    hide();
+    if (fn) fn();
+  }
+
+  EatWhat.toast = { show: show, hide: hide, runAction: runAction };
+})(window.EatWhat = window.EatWhat || {});
+
+</script>
+  <script>
+/**
+ * 渲染原子：图标（内联 SVG，currentColor）、verdict 徽章、原话卡、usage 提示条、打字机。
+ * 所有动态文本经 esc() 转义后插入 innerHTML，杜绝注入。
+ */
+(function (EatWhat) {
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  // 自绘线性图标（24×24 viewBox，currentColor 描边；quote 为填充）
+  var ICONS = {
+    bowl:     { stroke: '<path d="M3 11h18a9 9 0 0 1-18 0Z"/><path d="M8 7.5c0-1 1-1.4 1-2.5M12 7.5c0-1 1-1.4 1-2.5M16 7.5c0-1 1-1.4 1-2.5"/>' },
+    search:   { stroke: '<circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/>' },
+    bookmark: { stroke: '<path d="M6 3.5h12v17l-6-4-6 4v-17Z"/>' },
+    clock:    { stroke: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5.5l3.5 2"/>' },
+    info:     { stroke: '<circle cx="12" cy="12" r="9"/><path d="M12 11v5.5M12 7.8h.01"/>' },
+    warn:     { stroke: '<path d="M12 3.5 2.5 20h19L12 3.5Z"/><path d="M12 9.5v4.5M12 17.2h.01"/>' },
+    refresh:  { stroke: '<path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3"/><path d="M19.5 4v5h-5"/>' },
+    back:     { stroke: '<path d="m15 4-8 8 8 8"/>' },
+    close:    { stroke: '<path d="m6 6 12 12M18 6 6 18"/>' },
+    circle:   { stroke: '<path d="M20.4 12.6c-.4 4.4-4.2 7.4-8.7 7.2-4.6-.2-8.1-3.6-7.9-8 .2-4.5 4-7.8 8.6-7.6 4.3.2 7.8 3.2 8 7.3"/>' },
+    cross:    { stroke: '<path d="m5.5 5.5 13 13M18.5 5.5l-13 13"/>' },
+    check:    { stroke: '<path d="m4 12.5 5 5L20 6.5"/>' },
+    wave:     { stroke: '<path d="M2.5 12c2-3 4 3 6 0s4 3 6 0 4 3 7 0"/>' },
+    quote:    { fill: '<path d="M9 6.2C6.2 7.5 4.6 10 4.6 13.4H9V19H3.4v-5.6c0-4.7 2.1-7.2 5.6-8.6V6.2Zm11 0c-2.8 1.3-4.4 3.8-4.4 7.2H20V19h-5.6v-5.6c0-4.7 2.1-7.2 5.6-8.6V6.2Z"/>' },
+  };
+
+  function icon(name, cls) {
+    var def = ICONS[name];
+    if (!def) return '';
+    var attrs;
+    var body;
+    if (def.fill) {
+      attrs = 'fill="currentColor"';
+      body = def.fill;
+    } else {
+      attrs = 'fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"';
+      body = def.stroke;
+    }
+    return '<svg class="ic' + (cls ? ' ' + cls : '') + '" viewBox="0 0 24 24" aria-hidden="true" ' + attrs + '>' + body + '</svg>';
+  }
+
+  // verdict 徽章：颜色 + 图形 + 文字三信号
+  var VERDICT = {
+    '褒': { cls: 'vb-good', label: '能吃', icon: 'check' },
+    '贬': { cls: 'vb-bad', label: '雷', icon: 'cross' },
+    '有争议': { cls: 'vb-warn', label: '有争议', icon: 'wave' },
+  };
+
+  function verdictBadge(verdict, size) {
+    var v = VERDICT[verdict] || VERDICT['有争议'];
+    var lg = size === 'lg' ? ' vb-lg' : '';
+    return '<span class="vb ' + v.cls + lg + '">' + icon(v.icon) + '<span>' + v.label + '</span></span>';
+  }
+
+  // 原话卡：超长折叠（>60 字）
+  function evidenceCard(text) {
+    var t = String(text || '');
+    var long = t.length > 60;
+    return '<div class="ec">' +
+      icon('quote', 'ec-quote') +
+      '<span class="ec-text' + (long ? ' ec-clamp' : '') + '">' + esc(t) + '</span>' +
+      (long ? '<button class="ec-more" data-action="toggle-evidence">展开</button>' : '') +
+      '</div>';
+  }
+
+  // 打字机：每字 animation-delay 错开，reduced-motion 由全局媒体查询直接跳终态
+  function streamHtml(text, cls, delayMs) {
+    var source = String(text || '');
+    var base = Number(delayMs) || 0;
+    var out = '<span class="as' + (cls ? ' ' + cls : '') + '">';
+    for (var i = 0; i < source.length; i += 1) {
+      out += '<span class="as-char" style="animation-delay:' + (base + i * 28) + 'ms">' + esc(source[i]) + '</span>';
+    }
+    out += '</span>';
+    return out;
+  }
+
+  // —— 用量 / 降级提示（DESIGN §7.5） ——
+  var TIP_TABLE = {
+    normal:      { tone: 'info', icon: 'info', actionText: '', action: '' },
+    low:         { tone: 'warning', icon: 'warn', actionText: '', action: '' },
+    daily_full:  { tone: 'danger', icon: 'warn', actionText: '去查店', action: 'gotoavoid' },
+    month_cap:   { tone: 'danger', icon: 'warn', actionText: '去查店', action: 'gotoavoid' },
+    timeout:     { tone: 'warning', icon: 'warn', actionText: '再试一次', action: 'retry' },
+    invalid:     { tone: 'warning', icon: 'info', actionText: '', action: '' },
+    rate:        { tone: 'warning', icon: 'warn', actionText: '', action: '' },
+    offline:     { tone: 'danger', icon: 'warn', actionText: '重试', action: 'retry' },
+    unavailable: { tone: 'danger', icon: 'warn', actionText: '', action: '' },
+  };
+
+  var TIP_COPY = {
+    daily_full: '今天的次数用完了，明天再来。查店还能用',
+    month_cap: '这个月大家问得太多，机器人先歇会儿。查店照常',
+    timeout: '今天有点忙，等下再问一次',
+    invalid: '这次没挑出来，换个说法试试',
+    rate: '慢点问，歇十秒',
+    offline: '没网了，连上再说',
+    unavailable: '服务暂不可用',
+  };
+
+  function usageTip(usage, scenario) {
+    var key = scenario || '';
+    if (!key || key === 'normal') {
+      if (usage && usage.global_stopped === true) key = 'month_cap';
+      else if (usage && typeof usage.daily_remaining === 'number' && usage.daily_remaining <= 0) key = 'daily_full';
+      else if (usage && typeof usage.daily_remaining === 'number' && usage.daily_remaining <= 3) key = 'low';
+      else key = 'normal';
+    }
+    var conf = TIP_TABLE[key] || TIP_TABLE.unavailable;
+    var text = TIP_COPY[key] || '';
+    if (key === 'normal') {
+      text = (usage && typeof usage.daily_remaining === 'number')
+        ? '今天还能问 ' + usage.daily_remaining + ' 次'
+        : '今天随便问，不限次数';
+    } else if (key === 'low') {
+      var n = (usage && typeof usage.daily_remaining === 'number') ? usage.daily_remaining : 3;
+      text = '就剩 ' + n + ' 次了，省着点换';
+    }
+    var html = '<div class="ut ut-' + conf.tone + '">' + icon(conf.icon, 'ut-icon') + '<span class="ut-text">' + esc(text) + '</span>';
+    if (conf.actionText) {
+      html += '<button class="ut-action" data-action="tip-action" data-kind="' + conf.action + '">' + esc(conf.actionText) + '</button>';
+    }
+    html += '</div>';
+    return html;
+  }
+
+  // 错误码 → scenario
+  var SCENARIO = {
+    40301: 'daily_full',
+    40302: 'month_cap',
+    42901: 'rate',
+    50001: 'timeout',
+    50002: 'invalid',
+    50003: 'unavailable',
+    offline: 'offline',
+  };
+  function scenarioOf(code) { return SCENARIO[code] || 'normal'; }
+
+  EatWhat.ui = {
+    esc: esc,
+    icon: icon,
+    verdictBadge: verdictBadge,
+    evidenceCard: evidenceCard,
+    streamHtml: streamHtml,
+    usageTip: usageTip,
+    scenarioOf: scenarioOf,
+  };
+})(window.EatWhat = window.EatWhat || {});
+
+</script>
+  <script>
+/**
+ * 四个视图 + 全局事件分发。
+ * 渲染全部返回 HTML 字符串；动态文本经 ui.esc() 转义；输入不触发整页重渲，保住焦点。
+ */
+(function (EatWhat) {
+  var ui = EatWhat.ui;
+  var store = EatWhat.store;
+  var toast = EatWhat.toast;
+
+  function refresh() {
+    if (EatWhat.refresh) EatWhat.refresh();
+  }
+
+  /* ============================================================
+     首页「吃什么」
+     ============================================================ */
+  var EXAMPLES = ['省钱又快', '想吃辣的', '堂食别踩雷'];
+  var MAX_GHOSTS = 3;
+  var STRIKE_MS = 300;
+
+  var indexState = {
+    question: '',
+    usage: null,
+    scenario: '',
+    busy: false,
+    blocked: false,
+    fading: false,
+    answer: null,
+    ghosts: [],
+    excludeIds: [],
+    ghostSeq: 0,
+    usageLoaded: false,
+    focusInput: false,
+  };
+
+  function answerCardHtml(answer, fading) {
+    var html = '<div class="u-card idx-answer' + (fading ? ' idx-fade' : '') + '">';
+    if (answer.summary) html += ui.streamHtml(answer.summary, 'idx-summary', 0);
+    answer.restaurants.forEach(function (r, i) {
+      html += '<div class="idx-shop' + (i === 0 ? ' idx-shop-first' : '') + '">';
+      html += '<div class="idx-title-row">' + ui.icon('circle', 'idx-circle') +
+        '<span class="idx-display">' + ui.esc(r.restaurant_name) + '</span></div>';
+      html += '<span class="idx-reason">' + ui.esc(r.reason) + '</span>';
+      html += '<div class="idx-badge-row">' + ui.verdictBadge(r.verdict, 'lg') + '</div>';
+      html += '<div class="idx-evidence">';
+      r.evidence.forEach(function (ev) {
+        html += '<div class="idx-eq">' + ui.evidenceCard(ev) + '</div>';
+      });
+      html += '</div>';
+      html += '<button class="u-btn-secondary idx-why-btn" data-action="index-why" data-index="' + i + '" aria-label="为什么推荐它">为什么推荐它</button>';
+      html += '</div>';
+    });
+    html += '<div class="idx-actions">' +
+      '<button class="u-btn-secondary" data-action="index-changeone" aria-label="换一家">' +
+      ui.icon('refresh', 'idx-refresh') + '<span>换一家</span></button></div>';
+    html += '<span class="u-caption">换一家也算问一次</span>';
+    html += '</div>';
+    return html;
+  }
+
+  function renderIndex() {
+    var btnText = indexState.busy ? '翻小抄中…' : (indexState.blocked ? '今天的次数用完了' : '定一家');
+    var btnDisabled = indexState.busy || indexState.blocked;
+
+    var html = '<div id="idx-usage">' +
+      ((indexState.usage || indexState.scenario) ? ui.usageTip(indexState.usage, indexState.scenario) : '') +
+      '</div>';
+
+    html += '<div class="idx-head"><span class="idx-lead">别挑了，说一句想吃啥</span></div>';
+
+    html += '<div class="idx-input-wrap">' +
+      '<input class="idx-input" id="idx-question" type="text" value="' + ui.esc(indexState.question) + '"' +
+      ' placeholder="比如：辣一点，别太贵" maxlength="200" data-input="index-question" data-enter="index-ask" aria-label="想吃什么" /></div>';
+
+    html += '<button class="u-btn-primary idx-submit' + (btnDisabled ? ' u-btn-disabled' : '') + '"' +
+      ' data-action="index-ask" ' + (btnDisabled ? 'disabled' : '') + ' aria-label="定一家">' +
+      (indexState.busy ? '' : ui.icon('bowl', 'idx-bowl')) + '<span>' + btnText + '</span></button>';
+
+    html += '<div class="idx-chips">';
+    EXAMPLES.forEach(function (t) {
+      html += '<button class="u-chip" data-action="index-example" data-text="' + ui.esc(t) + '" aria-label="填入 ' + ui.esc(t) + '">' + ui.esc(t) + '</button>';
+    });
+    html += '</div><span class="u-hint idx-help">不知道怎么说？点一句试试</span>';
+
+    if (indexState.ghosts.length) {
+      html += '<div class="idx-ghosts">';
+      indexState.ghosts.forEach(function (g) {
+        html += '<div class="ghost' + (g.fresh ? ' ghost-fresh' : '') + '">' +
+          '<span class="ghost-name">' + ui.esc(g.name) + '</span>' +
+          '<span class="ghost-line"></span>' +
+          '<span class="ghost-note">划掉这家</span></div>';
+      });
+      html += '</div>';
+    }
+
+    if (indexState.busy) {
+      html += '<div class="idx-loading"><span class="u-hint">在表里翻哪个能吃…</span></div>';
+    }
+
+    if (indexState.answer) html += answerCardHtml(indexState.answer, indexState.fading);
+
+    return html;
+  }
+
+  function loadUsage() {
+    EatWhat.api.usage().then(function (env) {
+      if (env && env.code === 0 && env.data) {
+        indexState.usage = env.data;
+        indexState.scenario = '';
+      } else {
+        indexState.usage = null;
+        indexState.scenario = ui.scenarioOf(env && env.code);
+      }
+      indexState.blocked = !!(indexState.usage && indexState.usage.global_stopped === true);
+      var tipEl = document.getElementById('idx-usage');
+      if (tipEl) tipEl.innerHTML = ui.usageTip(indexState.usage, indexState.scenario);
+      var btn = document.querySelector('#view .idx-submit');
+      if (btn) {
+        var disabled = indexState.busy || indexState.blocked;
+        btn.disabled = disabled;
+        if (disabled) btn.classList.add('u-btn-disabled'); else btn.classList.remove('u-btn-disabled');
+        var span = btn.querySelector('span');
+        if (span) span.textContent = indexState.busy ? '翻小抄中…' : (indexState.blocked ? '今天的次数用完了' : '定一家');
+      }
+    });
+  }
+
+  function mountIndex() {
+    if (!indexState.usageLoaded) {
+      indexState.usageLoaded = true;
+      loadUsage();
+    }
+    if (indexState.focusInput) {
+      indexState.focusInput = false;
+      var inp = document.getElementById('idx-question');
+      if (inp) inp.focus();
+    }
+    if (store.consumeChangeOne()) {
+      setTimeout(function () { changeOne(); }, 60);
+    }
+  }
+
+  function indexAsk() {
+    if (indexState.busy || indexState.blocked) return;
+    runAsk();
+  }
+
+  function runAsk() {
+    var question = String(indexState.question || '').trim();
+    if (!question) {
+      indexState.scenario = 'invalid';
+      refresh();
+      return;
+    }
+    indexState.busy = true;
+    indexState.fading = false;
+    indexState.scenario = '';
+    indexState.answer = null;
+    refresh();
+
+    EatWhat.api.recommend(question, indexState.excludeIds.slice()).then(function (env) {
+      if (!env || env.code !== 0 || !env.data || !env.data.answer) {
+        indexState.busy = false;
+        indexState.scenario = ui.scenarioOf(env && env.code);
+        refresh();
+        return;
+      }
+      var answer = env.data.answer;
+      var ids = (answer.restaurants || []).map(function (r) { return r.restaurant_id; });
+      indexState.excludeIds = indexState.excludeIds.concat(ids).slice(-20);
+      indexState.answer = answer;
+      indexState.busy = false;
+      if (indexState.usage) {
+        indexState.usage = Object.assign({}, indexState.usage, { daily_remaining: env.data.daily_remaining });
+      }
+      indexState.scenario = env.data.degraded ? 'invalid' : '';
+      refresh();
+    });
+  }
+
+  function changeOne() {
+    var current = indexState.answer;
+    if (indexState.busy) return;
+
+    var ghosts = indexState.ghosts.slice();
+    var names = (current && current.restaurants) ? current.restaurants.map(function (r) { return r.restaurant_name; }) : [];
+    if (names.length) {
+      ghosts = ghosts.map(function (g) { return Object.assign({}, g, { fresh: false }); });
+      var seq = indexState.ghostSeq;
+      names.forEach(function (name) {
+        seq += 1;
+        ghosts.push({ key: 'g' + seq, name: name, fresh: true });
+      });
+      while (ghosts.length > MAX_GHOSTS) ghosts.shift();
+      indexState.ghosts = ghosts;
+      indexState.ghostSeq = seq;
+      indexState.fading = true;
+      indexState.busy = true;
+      refresh();
+      setTimeout(function () {
+        indexState.answer = null;
+        indexState.fading = false;
+        refresh();
+      }, 200);
+    } else {
+      indexState.busy = true;
+      refresh();
+    }
+
+    setTimeout(function () {
+      var q = String(indexState.question || '').trim() || '随便来一家';
+      indexState.question = q;
+      runAsk();
+    }, STRIKE_MS);
+  }
+
+  function indexGoWhy(el) {
+    var answer = indexState.answer;
+    if (!answer || !answer.restaurants) return;
+    var idx = Number(el.getAttribute('data-index')) || 0;
+    var single = answer.restaurants[idx] || answer.restaurants[0];
+    if (!single) return;
+    store.setAnswer(single);
+    store.setReturnRoute('index');
+    EatWhat.router.navigate('why');
+  }
+
+  /* ============================================================
+     避雷查询
+     ============================================================ */
+  var AVOID_CHIPS = ['纸包鸡', '稻川岛滑蛋饭', '嗨将东北盒饭'];
+
+  var avoidState = {
+    query: '',
+    result: null,
+    searched: false,
+    scenario: '',
+    busy: false,
+  };
+
+  function renderAvoid() {
+    var savedIds = store.readAll().map(function (it) { return it.id; });
+
+    var html = '<div class="av-search">' + ui.icon('search', 'av-search-icon') +
+      '<input class="av-input" id="av-query" type="text" value="' + ui.esc(avoidState.query) + '"' +
+      ' placeholder="查一家店，看有没有人踩过雷" maxlength="40" data-input="avoid-query" data-enter="avoid-search" aria-label="查店名或商圈" />' +
+      '<button class="av-go" data-action="avoid-search" ' + (avoidState.busy ? 'disabled' : '') + ' aria-label="查这家店">查</button></div>';
+
+    html += '<div class="av-chips-title"><span class="u-caption">常被查的</span></div>';
+    html += '<div class="av-chips">';
+    AVOID_CHIPS.forEach(function (t) {
+      html += '<button class="u-chip" data-action="avoid-chip" data-text="' + ui.esc(t) + '" aria-label="查询 ' + ui.esc(t) + '">' + ui.esc(t) + '</button>';
+    });
+    html += '</div><span class="u-hint av-honest">表里没有的店，我们不会瞎编</span>';
+
+    if (avoidState.scenario) {
+      html += '<div class="ut-wrap">' + ui.usageTip(null, avoidState.scenario) + '</div>';
+    }
+
+    if (avoidState.searched && avoidState.result && !avoidState.result.found) {
+      html += '<div class="av-empty"><span class="av-empty-title">表里没有这家</span>' +
+        '<span class="u-hint">换个写法试试，或者这家还没人踩过</span>' +
+        '<button class="u-btn-secondary av-empty-btn" data-action="avoid-gotoindex" aria-label="让机器人帮我定">让机器人帮我定</button></div>';
+    }
+
+    if (avoidState.searched && avoidState.result && avoidState.result.found) {
+      html += '<div class="av-results">';
+      avoidState.result.matches.forEach(function (m) {
+        var saved = savedIds.indexOf(m.id) >= 0;
+        html += '<div class="u-card av-match">' +
+          '<div class="av-match-head"><span class="av-name">' + ui.esc(m.name) + '</span>' + ui.verdictBadge(m.verdict) + '</div>' +
+          '<span class="u-caption av-source">' + ui.esc(m.source_sheet) + ' · ' + m.mention_count + ' 条提及</span>' +
+          '<div class="av-evidence">';
+        m.evidence.forEach(function (ev) {
+          html += '<div class="av-eq">' + ui.evidenceCard(ev) + '</div>';
+        });
+        html += '</div><div class="av-match-actions">' +
+          '<button class="u-btn-secondary" data-action="avoid-save" data-id="' + ui.esc(m.id) + '" ' + (saved ? 'disabled' : '') + ' aria-label="存进清单">' +
+          ui.icon('bookmark', 'av-icon') + '<span>' + (saved ? '已在清单' : '存进清单') + '</span></button>' +
+          '<button class="u-btn-secondary" data-action="avoid-why" data-id="' + ui.esc(m.id) + '" aria-label="看原话">看原话</button>' +
+          '</div></div>';
+      });
+      html += '</div>';
+    }
+
+    return html;
+  }
+
+  function avoidSearch() {
+    var query = String(avoidState.query || '').trim();
+    if (!query) {
+      avoidState.scenario = 'invalid';
+      refresh();
+      return;
+    }
+    avoidState.busy = true;
+    avoidState.scenario = '';
+    refresh();
+
+    EatWhat.api.avoid(query).then(function (env) {
+      if (!env || env.code !== 0 || !env.data) {
+        avoidState.busy = false;
+        avoidState.searched = false;
+        avoidState.scenario = ui.scenarioOf(env && env.code);
+        refresh();
+        return;
+      }
+      avoidState.busy = false;
+      avoidState.searched = true;
+      avoidState.scenario = '';
+      avoidState.result = env.data;
+      refresh();
+    });
+  }
+
+  function avoidFind(id) {
+    var matches = (avoidState.result && avoidState.result.matches) || [];
+    for (var i = 0; i < matches.length; i += 1) { if (matches[i].id === id) return matches[i]; }
+    return null;
+  }
+
+  function avoidSave(el) {
+    var target = avoidFind(el.getAttribute('data-id'));
+    if (!target) return;
+    var result = store.add({ id: target.id, name: target.name, verdict: target.verdict });
+    if (!result.ok && result.reason === 'exists') { toast.show({ text: '这家已经在清单里了' }); return; }
+    if (!result.ok) { toast.show({ text: '没存上，再点一次' }); return; }
+    refresh();
+    toast.show({ text: '已存进清单' });
+  }
+
+  function avoidWhy(el) {
+    var target = avoidFind(el.getAttribute('data-id'));
+    if (!target) return;
+    store.setAnswer({
+      restaurant_id: target.id,
+      restaurant_name: target.name,
+      verdict: target.verdict,
+      reason: target.evidence[0] || '表里没有更多原话了',
+      evidence: target.evidence,
+    });
+    store.setReturnRoute('avoid');
+    EatWhat.router.navigate('why');
+  }
+
+  /* ============================================================
+     我的清单
+     ============================================================ */
+  function renderMine() {
+    var items = store.readAll();
+    var html = '<div class="mine-head"><span class="mine-title">我攒的店</span><span class="mine-count u-num">' + items.length + '</span></div>';
+    html += '<span class="u-hint">只存在这台手机上，换个手机就没了</span>';
+
+    if (items.length === 0) {
+      html += '<div class="mine-empty"><span class="u-hint">还没攒店。查到能吃的，点书签存这儿。</span>' +
+        '<button class="u-btn-secondary mine-empty-btn" data-action="mine-gotoavoid" aria-label="去查店">去查店</button></div>';
+    } else {
+      html += '<div class="mine-list">';
+      items.forEach(function (it) {
+        html += '<div class="mine-row">' +
+          '<span class="mine-name">' + ui.esc(it.name) + '</span>' +
+          ui.verdictBadge(it.verdict) +
+          '<button class="mine-del" data-action="mine-remove" data-id="' + ui.esc(it.id) + '" aria-label="删除 ' + ui.esc(it.name) + '">' + ui.icon('close') + '</button></div>';
+      });
+      html += '</div>';
+    }
+    return html;
+  }
+
+  function mineRemove(el) {
+    var id = el.getAttribute('data-id');
+    var result = store.remove(id);
+    if (!result.ok || !result.removed) { toast.show({ text: '没删掉，再点一次' }); return; }
+    refresh();
+    var removed = result.removed;
+    var index = result.index;
+    toast.show({
+      text: '删了，可撤销',
+      actionText: '撤销',
+      duration: 5000,
+      onAction: function () {
+        store.restore(removed, index);
+        refresh();
+        toast.show({ text: '已经放回来了' });
+      },
+    });
+  }
+
+  /* ============================================================
+     为什么推荐
+     ============================================================ */
+  function renderWhy() {
+    var answer = store.getAnswer();
+    if (!answer || !answer.restaurant_name) {
+      return '<div class="why-empty"><span class="why-empty-title">这次没挑出理由，换个说法再问</span>' +
+        '<button class="u-btn-secondary why-empty-btn" data-action="why-back" aria-label="返回">返回</button></div>';
+    }
+    var disputed = answer.verdict === '有争议';
+    var saved = store.has(answer.restaurant_id);
+
+    var html = '<div class="why-head"><span class="why-name">' + ui.esc(answer.restaurant_name) + '</span>' +
+      ui.verdictBadge(answer.verdict, 'lg') + '</div>';
+    html += '<span class="why-subtitle">凭什么推荐它</span>';
+    html += '<span class="why-reason">' + ui.esc(answer.reason) + '</span>';
+    if (disputed) html += '<div class="why-disputed">这家有争议，夸的和骂的都有，自己掂量</div>';
+    html += '<span class="u-caption why-note">都是同学原话，名字抹掉了</span>';
+    html += '<div class="why-evidence">';
+    (answer.evidence || []).forEach(function (ev) {
+      html += '<div class="why-eq">' + ui.evidenceCard(ev) + '</div>';
+    });
+    html += '</div>';
+    html += '<div class="why-actions">' +
+      '<button class="u-btn-primary" data-action="why-save" ' + (saved ? 'disabled' : '') + ' aria-label="就吃这家，存进清单">' + (saved ? '已在清单' : '就吃这家，存进清单') + '</button>' +
+      '<button class="u-btn-secondary" data-action="why-changeone" aria-label="换一家">换一家</button>' +
+      '</div>';
+    return html;
+  }
+
+  function whySave() {
+    var answer = store.getAnswer();
+    if (!answer) return;
+    var result = store.add({ id: answer.restaurant_id, name: answer.restaurant_name, verdict: answer.verdict });
+    if (!result.ok && result.reason === 'exists') { toast.show({ text: '这家已经在清单里了' }); return; }
+    if (!result.ok) { toast.show({ text: '没存上，再点一次' }); return; }
+    refresh();
+    toast.show({ text: '已存进清单' });
+  }
+
+  function whyChangeOne() {
+    store.setPendingChangeOne();
+    EatWhat.router.navigate(store.getReturnRoute());
+  }
+
+  /* ============================================================
+     全局动作
+     ============================================================ */
+  function toggleEvidence(el) {
+    var ec = el.closest('.ec');
+    if (!ec) return;
+    var text = ec.querySelector('.ec-text');
+    var more = ec.querySelector('.ec-more');
+    if (!text) return;
+    var wasClamped = text.classList.contains('ec-clamp');
+    text.classList.toggle('ec-clamp');
+    if (more) more.textContent = wasClamped ? '收起' : '展开';
+  }
+
+  function handleTipAction(kind) {
+    if (kind === 'gotoavoid') { EatWhat.router.navigate('avoid'); return; }
+    if (kind === 'retry') {
+      if (EatWhat.router.current === 'avoid') { avoidSearch(); }
+      else { loadUsage(); runAsk(); }
+    }
+  }
+
+  EatWhat.views = {
+    index: { title: '吃什么', back: false, tab: true, render: renderIndex, mount: mountIndex },
+    avoid: { title: '避雷', back: false, tab: true, render: renderAvoid },
+    mine:  { title: '清单', back: false, tab: true, render: renderMine },
+    why:   { title: '为什么推荐它', back: true, tab: false, render: renderWhy },
+  };
+
+  EatWhat.handleAction = function (action, el) {
+    switch (action) {
+      case 'nav': EatWhat.router.navigate(el.getAttribute('data-route')); break;
+      case 'back': EatWhat.router.navigate(store.getReturnRoute()); break;
+      case 'toggle-evidence': toggleEvidence(el); break;
+      case 'toast-action': toast.runAction(); break;
+      case 'toast-close': toast.hide(); break;
+      case 'tip-action': handleTipAction(el.getAttribute('data-kind')); break;
+      case 'index-ask': indexAsk(); break;
+      case 'index-example':
+        indexState.question = el.getAttribute('data-text') || '';
+        indexState.focusInput = true;
+        refresh();
+        break;
+      case 'index-changeone': changeOne(); break;
+      case 'index-why': indexGoWhy(el); break;
+      case 'avoid-search': avoidSearch(); break;
+      case 'avoid-chip':
+        avoidState.query = el.getAttribute('data-text') || '';
+        avoidSearch();
+        break;
+      case 'avoid-save': avoidSave(el); break;
+      case 'avoid-why': avoidWhy(el); break;
+      case 'avoid-gotoindex': EatWhat.router.navigate('index'); break;
+      case 'mine-remove': mineRemove(el); break;
+      case 'mine-gotoavoid': EatWhat.router.navigate('avoid'); break;
+      case 'why-save': whySave(); break;
+      case 'why-changeone': whyChangeOne(); break;
+      case 'why-back': EatWhat.router.navigate(store.getReturnRoute()); break;
+    }
+  };
+
+  EatWhat.handleInput = function (name, el) {
+    if (name === 'index-question') indexState.question = el.value;
+    else if (name === 'avoid-query') avoidState.query = el.value;
+  };
+})(window.EatWhat = window.EatWhat || {});
+
+</script>
+  <script>
+/**
+ * 路由 + 引导 + 全局事件委托。
+ * hash 路由： #/ (index) / #/avoid / #/mine / #/why。
+ */
+(function (EatWhat) {
+  var routes = {
+    index: EatWhat.views.index,
+    avoid: EatWhat.views.avoid,
+    mine: EatWhat.views.mine,
+    why: EatWhat.views.why,
+  };
+
+  function currentRoute() {
+    var path = (window.location.hash || '#/').replace(/^#\/?/, '');
+    if (!path) path = 'index';
+    return routes[path] ? path : 'index';
+  }
+
+  function render() {
+    var route = currentRoute();
+    EatWhat.router.current = route;
+    var view = routes[route];
+
+    document.getElementById('topbar-title').textContent = view.title;
+    document.getElementById('topbar-back').hidden = !view.back;
+
+    var tabbar = document.getElementById('tabbar');
+    tabbar.hidden = !view.tab;
+    if (view.tab) {
+      var tabs = tabbar.querySelectorAll('.tab');
+      for (var i = 0; i < tabs.length; i += 1) {
+        tabs[i].classList.toggle('tab--active', tabs[i].getAttribute('data-route') === route);
+      }
+    }
+
+    var content = document.getElementById('view');
+    content.innerHTML = view.render();
+    if (view.mount) view.mount(content);
+    window.scrollTo(0, 0);
+  }
+
+  function navigate(route) {
+    window.location.hash = '#/' + (route === 'index' ? '' : route);
+  }
+
+  EatWhat.router = { current: 'index', render: render, navigate: navigate };
+  EatWhat.refresh = render;
+
+  document.addEventListener('click', function (e) {
+    var el = e.target.closest('[data-action]');
+    if (!el) return;
+    EatWhat.handleAction(el.getAttribute('data-action'), el);
+  });
+
+  document.addEventListener('input', function (e) {
+    var el = e.target.closest('[data-input]');
+    if (!el) return;
+    EatWhat.handleInput(el.getAttribute('data-input'), el);
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter') return;
+    var el = e.target.closest('[data-enter]');
+    if (!el) return;
+    e.preventDefault();
+    EatWhat.handleAction(el.getAttribute('data-enter'), el);
+  });
+
+  window.addEventListener('hashchange', render);
+  render();
+})(window.EatWhat = window.EatWhat || {});
+
+</script>
 </body>
 </html>
