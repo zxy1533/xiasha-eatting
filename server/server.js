@@ -1,6 +1,8 @@
 'use strict';
 
 const http = require('http');
+const fs = require('fs');
+const path = require('path');
 
 const { resolveConfig } = require('./shared/lib/config');
 const { CODES, AppError, ok, fail, normalizeError } = require('./shared/lib/errors');
@@ -108,8 +110,55 @@ async function handleUsage() {
   return ok(await usageService.checkUsage({ config, store, nowMs: Date.now() }));
 }
 
-function handleRoot() {
-  return ok({ status: 'ok', note: '今天吃什么 网页版后端已就绪，前端静态页面待接' });
+// ── Static H5 hosting ────────────────────────────────────────────────────────
+// The same single port serves both the API and the web/ static frontend, so the
+// browser can call /api/* same-origin (no CORS needed in production).
+const WEB_ROOT = path.resolve(__dirname, '..', 'web');
+const MIME = Object.freeze({
+  '.html': 'text/html; charset=utf-8',
+  '.css': 'text/css; charset=utf-8',
+  '.js': 'text/javascript; charset=utf-8',
+  '.svg': 'image/svg+xml',
+  '.ico': 'image/x-icon',
+  '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.webp': 'image/webp',
+  '.json': 'application/json; charset=utf-8',
+});
+
+function sendStatic(res, absPath) {
+  const ext = path.extname(absPath).toLowerCase();
+  const contentType = MIME[ext];
+  if (!contentType) return false; // unsupported extension -> let caller 404
+  let stat;
+  try {
+    stat = fs.statSync(absPath);
+  } catch (err) {
+    return false;
+  }
+  if (!stat.isFile()) return false;
+  const body = fs.readFileSync(absPath);
+  res.writeHead(200, Object.assign({
+    'Content-Type': contentType,
+    'Content-Length': body.length,
+    'Cache-Control': ext === '.html' ? 'no-cache' : 'public, max-age=3600',
+  }, CORS_HEADERS));
+  res.end(body);
+  return true;
+}
+
+/**
+ * Serve web/ statically with path-traversal guard.
+ * Only known extensions under WEB_ROOT are served; anything else returns false.
+ */
+function serveStatic(res, urlPath) {
+  const rel = decodeURIComponent(urlPath === '/' ? '/index.html' : urlPath);
+  const abs = path.resolve(WEB_ROOT, '.' + rel);
+  // Guard: resolved path must stay inside WEB_ROOT.
+  if (abs !== WEB_ROOT && !abs.startsWith(WEB_ROOT + path.sep)) {
+    return false;
+  }
+  return sendStatic(res, abs);
 }
 
 const server = http.createServer((req, res) => {
@@ -124,10 +173,14 @@ const server = http.createServer((req, res) => {
         res.end();
         return null;
       }
-      if (method === 'GET' && url === '/') return handleRoot();
       if (method === 'POST' && url === '/api/recommend') return handleRecommend(req);
       if (method === 'POST' && url === '/api/avoid') return handleAvoid(req);
       if (method === 'GET' && url === '/api/usage') return handleUsage();
+      // Everything else on GET is a static asset from web/.
+      if (method === 'GET') {
+        if (serveStatic(res, url)) return null; // already responded
+        return fail(CODES.NOT_FOUND, '页面不存在');
+      }
       return fail(CODES.NOT_FOUND, '接口不存在');
     })
     .then((envelope) => {
