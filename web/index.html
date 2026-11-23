@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#FAFAFA" />
+  <meta name="description" content="下沙高校圈「今天吃什么」：查店避雷 + 问答机器人帮你拍板，只看同学原话，不给星级。" />
+  <title>今天吃什么</title>
+  <link rel="stylesheet" href="css/app.css" />
+</head>
+<body>
+  <header class="topbar">
+    <button class="topbar-back" id="topbar-back" data-action="back" aria-label="返回" hidden>
+      <svg class="ic" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m15 4-8 8 8 8"/></svg>
+    </button>
+    <span class="topbar-title" id="topbar-title"></span>
+  </header>
+
+  <main class="view" id="view"></main>
+
+  <nav class="tabbar" id="tabbar" aria-label="底部导航">
+    <button class="tab" data-action="nav" data-route="index" aria-label="吃什么">
+      <svg class="ic" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11h18a9 9 0 0 1-18 0Z"/><path d="M8 7.5c0-1 1-1.4 1-2.5M12 7.5c0-1 1-1.4 1-2.5M16 7.5c0-1 1-1.4 1-2.5"/></svg>
+      <span>吃什么</span>
+    </button>
+    <button class="tab" data-action="nav" data-route="avoid" aria-label="避雷">
+      <svg class="ic" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg>
+      <span>避雷</span>
+    </button>
+    <button class="tab" data-action="nav" data-route="mine" aria-label="清单">
+      <svg class="ic" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3.5h12v17l-6-4-6 4v-17Z"/></svg>
+      <span>清单</span>
+    </button>
+  </nav>
+
+  <script src="js/api.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/toast.js"></script>
+  <script src="js/components.js"></script>
+  <script src="js/views.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
