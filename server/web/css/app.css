@@ -358,6 +358,91 @@ a { color: inherit; text-decoration: none; }
 /* ============================================================
    首页「吃什么」
    ============================================================ */
+
+/* 美食轮播：卡片式，图片定高裁切，图文同帧淡入淡出（无闪烁） */
+.car {
+  position: relative;
+  width: 100%;
+  height: 190px;
+  margin-top: var(--sp-md);
+  border-radius: var(--radius-md, 8px);
+  overflow: hidden;
+  background: var(--raised);
+  border: 0.5px solid var(--border);
+}
+.car-track { position: relative; width: 100%; height: 100%; }
+.car-slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 750ms cubic-bezier(0.4, 0, 0.2, 1), visibility 0s linear 750ms;
+  will-change: opacity;
+}
+.car-slide-on {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 750ms cubic-bezier(0.4, 0, 0.2, 1), visibility 0s;
+  z-index: 1;
+}
+.car-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transform: scale(1.04);
+  transition: transform 4800ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.car-slide-on .car-img { transform: scale(1); }
+.car-shade {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 66px;
+  background: linear-gradient(to top, rgba(29, 28, 27, 0.74), rgba(29, 28, 27, 0));
+  pointer-events: none;
+}
+.car-caption {
+  position: absolute;
+  left: var(--sp-lg);
+  bottom: var(--sp-lg);
+  right: 68px;
+  pointer-events: none;
+}
+.car-cap-text {
+  display: inline-block;
+  color: #FFFFFF;
+  font-size: var(--fs-t4);
+  font-weight: 500;
+  line-height: 1.4;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+.car-dots {
+  position: absolute;
+  right: var(--sp-md);
+  bottom: var(--sp-md);
+  display: flex;
+  gap: 6px;
+  z-index: 2;
+}
+.car-dot {
+  width: 7px;
+  height: 7px;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.55);
+  cursor: pointer;
+  transition: width 420ms cubic-bezier(0.4, 0, 0.2, 1),
+              background-color 420ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.car-dot-on { background: var(--accent); width: 18px; }
+.car-dot:focus-visible { outline: 2px solid #FFFFFF; outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .car, .car-slide, .car-slide-on, .car-img, .car-dot { transition-duration: 0.01ms !important; }
+  .car-img { transform: none !important; }
+}
+
 .idx-lead { display: block; color: var(--ink); font-size: var(--fs-t6); font-weight: 500; line-height: 1.4; }
 
 .idx-input-wrap { margin-top: var(--sp-sm); }

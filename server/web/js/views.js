@@ -66,6 +66,11 @@
       ((indexState.usage || indexState.scenario) ? ui.usageTip(indexState.usage, indexState.scenario) : '') +
       '</div>';
 
+    // 美食轮播（高清中餐图，视觉钩子）；仅在无答案时展示，出答案后让位给结果
+    if (EatWhat.carouselHtml && !indexState.answer) {
+      html += EatWhat.carouselHtml();
+    }
+
     html += '<div class="idx-head"><span class="idx-lead">别挑了，说一句想吃啥</span></div>';
 
     html += '<div class="idx-input-wrap">' +
@@ -126,6 +131,7 @@
   }
 
   function mountIndex() {
+    if (EatWhat.mountCarousel) EatWhat.mountCarousel();
     if (!indexState.usageLoaded) {
       indexState.usageLoaded = true;
       loadUsage();
